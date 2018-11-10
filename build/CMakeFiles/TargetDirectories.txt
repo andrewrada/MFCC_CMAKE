@@ -1,0 +1,8 @@
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/install.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/list_install_components.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/rebuild_cache.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/install/local.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/edit_cache.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetect.dir
+/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/install/strip.dir
