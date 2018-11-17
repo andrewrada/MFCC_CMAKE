@@ -3512,6 +3512,7 @@ double predict_test(SIGNAL audio_signal, char * path, int predict_probability, s
 	double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
 	double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
 	printf("total time silence detect : %f\n", (t1- t0) * 1000);
+	gettimeofday(&tv0, 0);
 	int correct = 0;
 	int total = 0;
 	double error = 0;
@@ -3558,7 +3559,10 @@ double predict_test(SIGNAL audio_signal, char * path, int predict_probability, s
 	if (predict_probability) {
 		free(prob_estimate);
 	}
-	svm_free_and_destroy_model(&model);
+	gettimeofday(&tv1, 0);	
+	t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
+	t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
+	printf("predict time : %f\n", (t1- t0) * 1000);
 	free(node);
 	return predict_label;
 }
