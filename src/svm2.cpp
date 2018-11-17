@@ -9,6 +9,7 @@
 #include <locale.h>
 #ifdef UNIX
 #include <errno.h>
+#include <sys/time.h>
 #endif
 #ifdef __cplusplus
 extern "C"{
@@ -3503,7 +3504,14 @@ void do_cross_validation(svm_problem * prob, svm_parameter * param)
 
 double predict_test(SIGNAL audio_signal, char * path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal)
 {
+	struct timeval tv0,tv1;
+	gettimeofday(&tv0, 0);
+				
 	svm_node *node = build_node_from_signal(audio_signal, path, sum_normal);
+	gettimeofday(&tv1, 0);	
+	double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
+	double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
+	printf("total time silence detect : %f\n", (t1- t0) * 1000);
 	int correct = 0;
 	int total = 0;
 	double error = 0;
