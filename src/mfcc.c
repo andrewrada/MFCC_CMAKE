@@ -776,7 +776,13 @@ hyper_vector get_feature_vector_from_signal(SIGNAL a)
 	hyper_vector frames = getFrames(a);
 	free(a.raw_signal);
 	/*______________________compute_DFT_and_Power_spectrum____________________________________________*/
+	struct timeval tv0,tv1;
+	gettimeofday(&tv0, 0);
 	hyper_vector power_spec = fft(frames, 512);
+	gettimeofday(&tv1, 0);
+	double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
+	double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
+	printf("fft time : %f\n", (t1- t0) * 1000);
 	/*______________________get_filterbanks___________________________________________________________*/
 	filter_bank fbanks = filterbank(26, 512);
 	/*______________________apply_filterBanks_________________________________________________________*/
