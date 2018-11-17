@@ -6,6 +6,22 @@
 
 #IncludeRegexTransform: 
 
+../include/gemm.h
+
+../include/kiss_fft.h
+stdlib.h
+-
+stdio.h
+-
+math.h
+-
+string.h
+-
+xmmintrin.h
+-
+sys/types.h
+-
+
 ../include/mfcc.h
 record.h
 ../include/record.h
@@ -15,6 +31,10 @@ math.h
 -
 stdio.h
 -
+kiss_fft.h
+../include/kiss_fft.h
+gemm.h
+../include/gemm.h
 
 ../include/record.h
 stdio.h

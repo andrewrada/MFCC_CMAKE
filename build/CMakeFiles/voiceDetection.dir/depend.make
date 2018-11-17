@@ -16,6 +16,12 @@ CMakeFiles/voiceDetection.dir/src/filter.c.o: /home/anhnt/portaudio/include/port
 CMakeFiles/voiceDetection.dir/src/gemm.c.o: ../include/gemm.h
 CMakeFiles/voiceDetection.dir/src/gemm.c.o: ../src/gemm.c
 
+CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o: ../include/_kiss_fft_guts.h
+CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o: ../include/kiss_fft.h
+CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o: ../src/kiss_fft.c
+
+CMakeFiles/voiceDetection.dir/src/mfcc.c.o: ../include/gemm.h
+CMakeFiles/voiceDetection.dir/src/mfcc.c.o: ../include/kiss_fft.h
 CMakeFiles/voiceDetection.dir/src/mfcc.c.o: ../include/mfcc.h
 CMakeFiles/voiceDetection.dir/src/mfcc.c.o: ../include/record.h
 CMakeFiles/voiceDetection.dir/src/mfcc.c.o: ../include/utils.h
@@ -32,11 +38,24 @@ CMakeFiles/voiceDetection.dir/src/svm.c.o: ../include/utils.h
 CMakeFiles/voiceDetection.dir/src/svm.c.o: ../src/svm.c
 CMakeFiles/voiceDetection.dir/src/svm.c.o: /home/anhnt/portaudio/include/portaudio.h
 
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/filter.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/gemm.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/kiss_fft.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/mfcc.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/record.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/svm2.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/syll_fragmentation.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../include/utils.h
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: ../src/syll_fragmentation.c
+CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o: /home/anhnt/portaudio/include/portaudio.h
+
 CMakeFiles/voiceDetection.dir/src/utils.c.o: ../include/record.h
 CMakeFiles/voiceDetection.dir/src/utils.c.o: ../include/utils.h
 CMakeFiles/voiceDetection.dir/src/utils.c.o: ../src/utils.c
 CMakeFiles/voiceDetection.dir/src/utils.c.o: /home/anhnt/portaudio/include/portaudio.h
 
+CMakeFiles/voiceDetection.dir/src/svm2.cpp.o: ../include/gemm.h
+CMakeFiles/voiceDetection.dir/src/svm2.cpp.o: ../include/kiss_fft.h
 CMakeFiles/voiceDetection.dir/src/svm2.cpp.o: ../include/mfcc.h
 CMakeFiles/voiceDetection.dir/src/svm2.cpp.o: ../include/record.h
 CMakeFiles/voiceDetection.dir/src/svm2.cpp.o: ../include/svm2.h

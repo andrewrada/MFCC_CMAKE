@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o"
   "CMakeFiles/voiceDetection.dir/src/filter.c.o"
   "CMakeFiles/voiceDetection.dir/src/record.c.o"
   "CMakeFiles/voiceDetection.dir/src/utils.c.o"
@@ -6,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/voiceDetection.dir/src/mfcc.c.o"
   "CMakeFiles/voiceDetection.dir/src/augmentation.c.o"
   "CMakeFiles/voiceDetection.dir/src/svm.c.o"
+  "CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o"
   "CMakeFiles/voiceDetection.dir/src/svm2.cpp.o"
   "libvoiceDetection.pdb"
   "libvoiceDetection.so"

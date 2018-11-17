@@ -6,6 +6,14 @@
 
 #IncludeRegexTransform: 
 
+../include/_kiss_fft_guts.h
+kiss_fft.h
+../include/kiss_fft.h
+limits.h
+-
+alloca.h
+-
+
 ../include/augmentation.h
 utils.h
 ../include/utils.h
@@ -26,6 +34,20 @@ utils.h
 
 ../include/gemm.h
 
+../include/kiss_fft.h
+stdlib.h
+-
+stdio.h
+-
+math.h
+-
+string.h
+-
+xmmintrin.h
+-
+sys/types.h
+-
+
 ../include/mfcc.h
 record.h
 ../include/record.h
@@ -35,6 +57,10 @@ math.h
 -
 stdio.h
 -
+kiss_fft.h
+../include/kiss_fft.h
+gemm.h
+../include/gemm.h
 
 ../include/record.h
 stdio.h
@@ -56,6 +82,34 @@ stdint.h
 utils.h
 ../include/utils.h
 
+../include/svm2.h
+mfcc.h
+../include/mfcc.h
+record.h
+../include/record.h
+
+../include/syll_fragmentation.h
+stdint.h
+-
+stdio.h
+-
+stdlib.h
+-
+portaudio.h
+../include/portaudio.h
+filter.h
+../include/filter.h
+mfcc.h
+../include/mfcc.h
+record.h
+../include/record.h
+windows.h
+../include/windows.h
+Sysinfoapi.h
+../include/Sysinfoapi.h
+svm2.h
+../include/svm2.h
+
 ../include/utils.h
 record.h
 ../include/record.h
@@ -72,6 +126,10 @@ filter.h
 gemm.h
 /home/anhnt/MFCC_CMake_Test/src/gemm.h
 
+/home/anhnt/MFCC_CMake_Test/src/kiss_fft.c
+_kiss_fft_guts.h
+/home/anhnt/MFCC_CMake_Test/src/_kiss_fft_guts.h
+
 /home/anhnt/MFCC_CMake_Test/src/mfcc.c
 mfcc.h
 /home/anhnt/MFCC_CMake_Test/src/mfcc.h
@@ -83,6 +141,10 @@ record.h
 /home/anhnt/MFCC_CMake_Test/src/svm.c
 svm.h
 /home/anhnt/MFCC_CMake_Test/src/svm.h
+
+/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.c
+syll_fragmentation.h
+/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.h
 
 /home/anhnt/MFCC_CMake_Test/src/utils.c
 utils.h

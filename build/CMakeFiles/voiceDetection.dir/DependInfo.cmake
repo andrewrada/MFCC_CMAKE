@@ -8,9 +8,11 @@ set(CMAKE_DEPENDS_CHECK_C
   "/home/anhnt/MFCC_CMake_Test/src/augmentation.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/augmentation.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/filter.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/filter.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/gemm.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/gemm.c.o"
+  "/home/anhnt/MFCC_CMake_Test/src/kiss_fft.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/mfcc.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/mfcc.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/record.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/record.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/svm.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/svm.c.o"
+  "/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o"
   "/home/anhnt/MFCC_CMake_Test/src/utils.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/utils.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

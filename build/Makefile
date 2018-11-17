@@ -288,6 +288,33 @@ src/gemm.c.s:
 	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/gemm.c.s
 .PHONY : src/gemm.c.s
 
+src/kiss_fft.o: src/kiss_fft.c.o
+
+.PHONY : src/kiss_fft.o
+
+# target to build an object file
+src/kiss_fft.c.o:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o
+.PHONY : src/kiss_fft.c.o
+
+src/kiss_fft.i: src/kiss_fft.c.i
+
+.PHONY : src/kiss_fft.i
+
+# target to preprocess a source file
+src/kiss_fft.c.i:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/kiss_fft.c.i
+.PHONY : src/kiss_fft.c.i
+
+src/kiss_fft.s: src/kiss_fft.c.s
+
+.PHONY : src/kiss_fft.s
+
+# target to generate assembly for a file
+src/kiss_fft.c.s:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/kiss_fft.c.s
+.PHONY : src/kiss_fft.c.s
+
 src/mfcc.o: src/mfcc.c.o
 
 .PHONY : src/mfcc.o
@@ -396,6 +423,33 @@ src/svm2.cpp.s:
 	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/svm2.cpp.s
 .PHONY : src/svm2.cpp.s
 
+src/syll_fragmentation.o: src/syll_fragmentation.c.o
+
+.PHONY : src/syll_fragmentation.o
+
+# target to build an object file
+src/syll_fragmentation.c.o:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o
+.PHONY : src/syll_fragmentation.c.o
+
+src/syll_fragmentation.i: src/syll_fragmentation.c.i
+
+.PHONY : src/syll_fragmentation.i
+
+# target to preprocess a source file
+src/syll_fragmentation.c.i:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.i
+.PHONY : src/syll_fragmentation.c.i
+
+src/syll_fragmentation.s: src/syll_fragmentation.c.s
+
+.PHONY : src/syll_fragmentation.s
+
+# target to generate assembly for a file
+src/syll_fragmentation.c.s:
+	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.s
+.PHONY : src/syll_fragmentation.c.s
+
 src/utils.o: src/utils.c.o
 
 .PHONY : src/utils.o
@@ -449,6 +503,9 @@ help:
 	@echo "... src/gemm.o"
 	@echo "... src/gemm.i"
 	@echo "... src/gemm.s"
+	@echo "... src/kiss_fft.o"
+	@echo "... src/kiss_fft.i"
+	@echo "... src/kiss_fft.s"
 	@echo "... src/mfcc.o"
 	@echo "... src/mfcc.i"
 	@echo "... src/mfcc.s"
@@ -461,6 +518,9 @@ help:
 	@echo "... src/svm2.o"
 	@echo "... src/svm2.i"
 	@echo "... src/svm2.s"
+	@echo "... src/syll_fragmentation.o"
+	@echo "... src/syll_fragmentation.i"
+	@echo "... src/syll_fragmentation.s"
 	@echo "... src/utils.o"
 	@echo "... src/utils.i"
 	@echo "... src/utils.s"

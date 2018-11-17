@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /home/anhnt/MFCC_CMake_Test/build
 CMakeFiles/voiceDetection.dir/all:
 	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/depend
 	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/anhnt/MFCC_CMake_Test/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11 "Built target voiceDetection"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/anhnt/MFCC_CMake_Test/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12,13 "Built target voiceDetection"
 .PHONY : CMakeFiles/voiceDetection.dir/all
 
 # Include target in all.
@@ -76,7 +76,7 @@ all: CMakeFiles/voiceDetection.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/voiceDetection.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/anhnt/MFCC_CMake_Test/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/anhnt/MFCC_CMake_Test/build/CMakeFiles 11
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/voiceDetection.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/anhnt/MFCC_CMake_Test/build/CMakeFiles 0
 .PHONY : CMakeFiles/voiceDetection.dir/rule
