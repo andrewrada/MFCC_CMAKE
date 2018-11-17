@@ -8,6 +8,8 @@
 #include "utils.h"
 #include <math.h>
 #include <stdio.h>
+#include "kiss_fft.h"
+#include "gemm.h"
 
 /*defines, constants
 ------------------------------------------
@@ -53,6 +55,7 @@ extern "C" {
 	filter_bank getFBank(float *fbank, int nfilt, int filt_len);
 	int getLength(SAMPLE *a);
 	SIGNAL setSignal(SAMPLE *a, int size);
+	SIGNAL setSignal2(SAMPLE *a, int size);
 	hyper_vector setHVector(SAMPLE *a, int col, int row, int dim);
 	hyper_vector getFrames(struct SIGNAL a);
 	void append_energy(hyper_vector dct, hyper_vector pow_spec);
@@ -77,12 +80,12 @@ extern "C" {
 
 	//////////////////////////////////final_feature/////////////////////////////
 	hyper_vector cov(hyper_vector mfcc);
-	void normalize(char *path_nor, char *path_mean, int* label, float * data, int row, int col);
+	void normalize(char *path_nor, char *path_mean, char *path_sum, int* label, float * data, int row, int col);
 	void Get_normalize(int label, float * data, int row, int col);
 	void normalize2(int label, float * data, int row, int col);
 	hyper_vector var(hyper_vector);
 
-	hyper_vector get_feature_vector_from_signal(SAMPLE *audio_signal, int size);
+	hyper_vector get_feature_vector_from_signal(SIGNAL a);
 	void write_feature_vector_to_database(hyper_vector feature_vector, char *name);
 
 	////////////////////////////////
@@ -92,8 +95,11 @@ extern "C" {
 	//////////////////////test_signal_via_matlab/////////////////////////
 	void writeDBFS(SAMPLE* raw_signal, int trim_ms, int signal_len);
 	void create_database(char *path, int max_index);
-	void normalize_db(char *path_nor, char *path_mean, char *path_db, char *path_info, int max_index);
-	void normalize_from_file(char *path_nor, char *path_mean, char *filename, int row, int col);
+	void normalize_db(char *path_nor, char *path_mean, char *path_db, char *path_info, char*path_sum, int max_index);
+	void normalize_from_file(char *path_nor, char *path_mean, char *filename, char *path_sum, int row, int col);
+	hyper_vector fft(hyper_vector frames, int n);
+	void mfcc_load_normalized_sum(SAMPLE *sum_normal, char *path);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

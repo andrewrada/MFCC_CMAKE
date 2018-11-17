@@ -107,10 +107,10 @@ extern "C" {
 
 	void training_normalize(char *path, int argc, char **argv);
 	void do_cross_validation(struct svm_problem *prob, struct svm_parameter *param);
-	double predict_test(SAMPLE *audio_signal, char *path, int predict_probability);
-	struct svm_node *build_node_from_signal(SAMPLE *audio_signal, char *path);
-	void predict_test_one_time(char *path, int predict_probability);
-	void check_continue_predict(char *path, int predict_probability, char *y_n);
+	double predict_test(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal);
+	struct svm_node *build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_normal);
+	int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability, struct svm_model *model,SAMPLE *sum_normal);
+	void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n);
 #ifdef __cplusplus
 }
 #endif

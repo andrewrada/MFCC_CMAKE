@@ -2,6 +2,7 @@
 #include "record.h"
 #include "mfcc.h"
 #include "utils.h"
+#include "syll_fragmentation.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -78,6 +79,7 @@ int main(int argc, char **argv)
 		char *path_info = (char *)malloc(sizeof(char) * (len_path_folder + 8));
 		char *path_meaning = (char *)malloc(sizeof(char) * (len_path_folder + 8));
 		char *path_nor = (char *)malloc(sizeof(char) * (len_path_folder + 14));
+		char *path_sum = (char *)malloc(sizeof(char) * (len_path_folder + 7));
 		strcpy(path_config, path);
 		strcat(path_config, "config.txt");
 		strcpy(path_db, path);
@@ -88,13 +90,15 @@ int main(int argc, char **argv)
 		strcat(path_meaning, "mean.txt");
 		strcpy(path_nor, path);
 		strcat(path_nor, "normalized.txt");
+		strcpy(path_sum, path);
+		strcat(path_sum, "sum.txt");
 		FILE *config = fopen(path_config, "r");
 		if (config == NULL) {
 			fprintf(stderr, "Config file no exist!");
 			exit(1);
 		}
 		fscanf(config, "%d", &current_max_index);
-		normalize_db(path_nor, path_meaning, path_db, path_info, current_max_index);
+		normalize_db(path_nor, path_meaning, path_db, path_info, path_sum, current_max_index);
 	}
 	if (is_train) {
 		char *path = argv[argc - 1];
@@ -102,13 +106,35 @@ int main(int argc, char **argv)
 	}
 	if (is_predict) {
 		char *path = argv[argc - 1];
-		int predict_probability;
+		const char *model_path_def = "normalized.model";
+		const char * sum_path_def = "sum.txt";
+		size_t len_path = strlen(path);
+		char *model_path = (char *)malloc(sizeof(char) * (len_path + 16));
+		char *sum_path = (char *)malloc(sizeof(char) * (len_path + 7));
+
+		strcpy(model_path, path);
+		strcat(model_path, model_path_def);
+
+		strcpy(sum_path, path);
+		strcat(sum_path, sum_path_def);
+
+		struct svm_model *model;
+		if ((model = svm_load_model(model_path)) == 0) {
+			fprintf(stderr, "cant load model file \n");
+			exit(1);
+		}
+
+		SAMPLE *sum_normal = (SAMPLE*)malloc(sizeof(SAMPLE) * 91);
+		mfcc_load_normalized_sum(sum_normal, sum_path);
+
+		/*int predict_probability;
 		if (argv[2][0] != '-' && argv[2][1] != 'b') {
 			predict_probability = 0;
 		}
 		else {
 			predict_probability = 1;
-		}
-		predict_test_one_time(path, predict_probability);
+		}*/
+		real_time_predict(model, sum_normal);
 	}
+	return 0;
 }

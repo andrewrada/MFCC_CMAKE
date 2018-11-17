@@ -105,3 +105,39 @@ float * butterworth_lowpass(int order, float * signal, int size, float sample_ra
 	free(w2);
 	return x;
 }
+
+float * butterworth_bandpass_v2(int order, float * signal, int size, float sample_rate, float high_freq_cutoff, float low_freq_cutoff, float *A,
+	float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x)
+{
+	float a = cos(M_PI * (high_freq_cutoff + low_freq_cutoff) / sample_rate) / cos(M_PI * (high_freq_cutoff - low_freq_cutoff) / sample_rate);
+	float a_2 = a * a;
+	float b = tan(M_PI * (high_freq_cutoff - low_freq_cutoff) / sample_rate);
+	float b_2 = b * b;
+	float r;
+	for (int i = 0; i < order; ++i) {
+		r = sin(M_PI * (2.0 * i + 1.0) / (4.0 * order));
+		sample_rate = b_2 + 2.0 * b * r + 1.0;
+		A[i] = b_2 / sample_rate;
+		d1[i] = 4.0 * a * (1.0 + b * r) / sample_rate;
+		d2[i] = 2.0 * (b_2 - 2.0 * a_2 - 1.0) / sample_rate;
+		d3[i] = 4.0 * a * (1.0 - b * r) / sample_rate;
+		d4[i] = -(b_2 - 2.0 * b * r + 1.0) / sample_rate;
+	}
+	for (int i = 0; i < size; ++i) {
+		for (int j = 0; j < order; ++j) {
+			if (j == 0) {
+				w0[j] = d1[j] * w1[j] + d2[j] * w2[j] + d3[j] * w3[j] + d4[j] * w4[j] + signal[i];
+			}
+			else {
+				w0[j] = d1[j] * w1[j] + d2[j] * w2[j] + d3[j] * w3[j] + d4[j] * w4[j] + x[i];
+			}
+			x[i] = A[j] * (w0[j] - 2.0 * w2[j] + w4[j]);
+			w4[j] = w3[j];
+			w3[j] = w2[j];
+			w2[j] = w1[j];
+			w1[j] = w0[j];
+		}
+	}
+
+	return x;
+}

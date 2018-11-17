@@ -149,26 +149,21 @@ int get_number_of_sample_in_record()
 	return NUM_SECONDS * SAMPLE_RATE * NUM_CHANNELS;
 }
 
-SAMPLE * read_audio_signal_from_file(char * path)
+SAMPLE * read_audio_signal_from_file(char * path, int *size)
 {
 	int i, j;
 	FILE *fp = fopen(path, "r");
-	int number_of_sample = get_number_of_sample_in_record();
-	SAMPLE *audio_signal = (SAMPLE *)malloc(sizeof(SAMPLE) * number_of_sample);
+	fscanf(fp, "%d", size);
+	SAMPLE *audio_signal = (SAMPLE *)malloc(sizeof(SAMPLE) * (*size));
 	SAMPLE tmp;
-	int cols = NUMBER_OF_ELEMENTS_IN_A_ROW;
-	int rows = number_of_sample / NUMBER_OF_ELEMENTS_IN_A_ROW;
-	printf("cols : %d , rows : %d \n", cols, rows);
 	if (fp == NULL) {
 		fprintf(stderr, "file no exist!!! \n");
 		exit(1);
 	}
 	else {
-		for (i = 0; i < rows; ++i) {
-			for (j = 0; j < cols; ++j) {
-				fscanf(fp, "%f", &tmp);
-				audio_signal[i * cols + j] = tmp;
-			}
+		for (i = 0; i < (*size); ++i) {
+			fscanf(fp, "%f", &tmp);
+			audio_signal[i] = tmp;
 		}
 	}
 	fclose(fp);

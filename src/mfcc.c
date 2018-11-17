@@ -202,9 +202,9 @@ hyper_vector cov(hyper_vector mfcc)
 	return setHVector(final_mfcc, size, 1, 1);
 }
 
-void normalize(char *path_nor, char *path_mean, int *label, float * data, int row, int col)
+void normalize(char *path_nor, char *path_mean, char *path_sum, int *label, float * data, int row, int col)
 {
-	FILE *fmean, *fnorl;
+	FILE *fmean, *fnorl, *fsum;
 	float sum = 0;
 	int i, j;
 	float *mean = (float*)malloc(sizeof(float)*col);
@@ -213,6 +213,7 @@ void normalize(char *path_nor, char *path_mean, int *label, float * data, int ro
 		remove(path_mean);
 	}
 	fmean = fopen(path_mean, "w");
+	fsum = fopen(path_sum, "w");
 	for (i = 0; i < col; i++) {
 		sum = 0;
 		for (j = 0; j < row; j++) {
@@ -221,9 +222,11 @@ void normalize(char *path_nor, char *path_mean, int *label, float * data, int ro
 		mean[i] = sum / row;
 		printf("%f ", mean[i]);
 		fprintf(fmean, "%.9f ", mean[i]);
+		printf("\nSUM: %f", sum);
+		fprintf(fsum, "%.9f ", sum);
 	}
 	fclose(fmean);
-
+	fclose(fsum);
 
 	float maximum = 0;
 
@@ -566,6 +569,19 @@ SIGNAL setSignal(SAMPLE * a, int size)
 	return temp;
 }
 
+SIGNAL setSignal2(SAMPLE * a, int size)
+{
+	SIGNAL temp;
+	temp.raw_signal = (float *)malloc(sizeof(float) * size);
+	for (int i = 0; i < size; ++i) {
+		temp.raw_signal[i] = a[i];
+	}
+	temp.frame_length = SAMPLE_RATE * 0.025;
+	temp.step_lengh = SAMPLE_RATE * 0.01;
+	temp.signal_length = size;
+	return temp;
+}
+
 hyper_vector setHVector(SAMPLE * a, int col, int row, int dim)
 {
 	hyper_vector temp_vector;
@@ -752,20 +768,15 @@ void writeDBFS(SAMPLE* raw_signal, int trim_ms, int signal_len) {
 }
 
 
-hyper_vector get_feature_vector_from_signal(SAMPLE * audio_signal, int size)
+hyper_vector get_feature_vector_from_signal(SIGNAL a)
 {
 	/*______________________get_pre_emphasized_signal_________________________________________________*/
-	SIGNAL a = setSignal(audio_signal, size);
 
-	/*______________________get_silence_free_signal_________________________________________________*/
-	writeDBFS(a.raw_signal, 0, size);
-	SIGNAL temp = silence_trim(a);
-	free(a.raw_signal);
 	/*______________________get_Frames________________________________________________________________*/
-	hyper_vector frames = getFrames(temp);
-	free(temp.raw_signal);
+	hyper_vector frames = getFrames(a);
+	free(a.raw_signal);
 	/*______________________compute_DFT_and_Power_spectrum____________________________________________*/
-	hyper_vector power_spec = DFT_PowerSpectrum(frames, 512);
+	hyper_vector power_spec = fft(frames, 512);
 	/*______________________get_filterbanks___________________________________________________________*/
 	filter_bank fbanks = filterbank(26, 512);
 	/*______________________apply_filterBanks_________________________________________________________*/
@@ -800,7 +811,7 @@ void create_database(char * path, int max_index)
 {
 	int  label_cur = 0, i = 0;
 	char *label;
-	int size = get_number_of_sample_in_record();
+	int size = 0;
 	const char *default_ext = ".txt";
 	size_t len_path = strlen(path);
 	char *path_db = (char *)malloc(sizeof(char) * (len_path + 6));
@@ -867,8 +878,9 @@ void create_database(char * path, int max_index)
 				break;
 			}
 			dem++;
-			SAMPLE* audio_signal = read_audio_signal_from_file(path_file);
-			hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(audio_signal, size);
+			SAMPLE* audio_signal = read_audio_signal_from_file(path_file, &size);
+			SIGNAL a = setSignal(audio_signal, &size);
+			hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(a);
 			int size_feature_vector = feature_vector_all_frame.col * feature_vector_all_frame.row * feature_vector_all_frame.dim;
 			printf("size_feature_vector : %d \n", size_feature_vector);
 			fprintf(fdb, "%d ", label_cur + 1);
@@ -889,7 +901,7 @@ void create_database(char * path, int max_index)
 	fclose(fdb);
 }
 
-void normalize_db(char *path_nor, char *path_mean, char * path_db, char *path_info, int max_index)
+void normalize_db(char *path_nor, char *path_mean, char * path_db, char *path_info, char *path_sum, int max_index)
 {
 	int *info = (int *)malloc(sizeof(int) * (max_index + 2));
 	FILE *f = fopen(path_info, "r");
@@ -901,10 +913,10 @@ void normalize_db(char *path_nor, char *path_mean, char * path_db, char *path_in
 		fscanf(f, "%d", &info[i]);
 	}
 	fclose(f);
-	normalize_from_file(path_nor, path_mean, path_db, info[max_index + 1], FEATSIZE);
+	normalize_from_file(path_nor, path_mean, path_db, path_sum, info[max_index + 1], FEATSIZE);
 }
 
-void normalize_from_file(char *path_nor, char *path_mean, char *filename, int row, int col) {
+void normalize_from_file(char *path_nor, char *path_mean, char *filename, char *path_sum, int row, int col) {
 	int dem = 0, i = 0, j = 0;
 	float * raw_training = (float*)malloc(sizeof(float) * row * col);
 	int* label = (int*)malloc(sizeof(int)*row);
@@ -926,7 +938,61 @@ void normalize_from_file(char *path_nor, char *path_mean, char *filename, int ro
 		//printf("\n");
 	}
 	fclose(f);
-	normalize(path_nor, path_mean, label, raw_training, row, col);
+	normalize(path_nor, path_mean, path_sum, label, raw_training, row, col);
 	free(label);
 	free(raw_training);
+}
+
+hyper_vector fft(hyper_vector frames, int NFFT)
+{
+	hyper_vector pow_spectrum;
+	pow_spectrum.data = (SAMPLE*)malloc(sizeof(SAMPLE) * frames.row * (NFFT/2+1));
+	
+	kiss_fft_cpx * cx_in = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx)*NFFT);
+	kiss_fft_cpx * cx_out = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx)*NFFT);
+	kiss_fft_cfg cfg = kiss_fft_alloc(NFFT, 0, 0, 0);
+
+	///////////////power_spectrum_estimation////////////
+	float temp = 0;
+	int bound;
+	if (frames.col < NFFT) {
+		bound = NFFT;
+	}
+	else
+	{
+		bound = NFFT * 2;
+	}
+	for (int i = 0; i < frames.row; i++) {
+		for (int j = 0; j < bound; j++) {
+			if (j < frames.col)
+				cx_in[j].r = frames.data[i*frames.col + j];
+			else
+				cx_in[j].r = 0;
+			cx_in[j].i = 0;
+		}
+		kiss_fft(cfg, cx_in, cx_out);
+		for (int j = 0; j < NFFT/2+1; j++) {
+			temp = magnitude(cx_out[j].r, cx_out[j].i);
+			pow_spectrum.data[i* (NFFT / 2 + 1) + j] = temp * temp / frames.col;
+		}
+		temp = 0;
+	}
+	free(cx_in);
+	free(cx_out);
+	kiss_fft_free(cfg);
+	free(frames.data);
+
+	pow_spectrum.dim = 1;
+	pow_spectrum.col = NFFT/2+1;
+	pow_spectrum.row = frames.row;
+	return pow_spectrum;
+}
+
+void mfcc_load_normalized_sum(SAMPLE * sum_normal,char *path)
+{
+	FILE *f = fopen(path, "r");
+	for (int i = 0; i < FEATSIZE; i++) {
+		fscanf(f, "%f", &sum_normal[i]);
+	}
+	fclose(f);
 }

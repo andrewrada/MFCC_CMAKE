@@ -3501,19 +3501,9 @@ void do_cross_validation(svm_problem * prob, svm_parameter * param)
 	free(target);
 }
 
-double predict_test(SAMPLE * audio_signal, char * path, int predict_probability)
+double predict_test(SIGNAL audio_signal, char * path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal)
 {
-	svm_model *model;
-	size_t len_path = strlen(path);
-	const char *model_path_def = "normalized.model";
-	svm_node *node = build_node_from_signal(audio_signal, path);
-	char *model_path = (char *)malloc(sizeof(char) * (len_path + 16));
-	strcpy(model_path, path);
-	strcat(model_path, model_path_def);
-	if ((model = svm_load_model(model_path)) == 0) {
-		fprintf(stderr, "cant load model file \n");
-		exit(1);
-	}
+	svm_node *node = build_node_from_signal(audio_signal, path, sum_normal);
 	int correct = 0;
 	int total = 0;
 	double error = 0;
@@ -3554,7 +3544,6 @@ double predict_test(SAMPLE * audio_signal, char * path, int predict_probability)
 		printf("\n");
 	}
 	else {
-		printf("111\n");
 		predict_label = svm_predict(model, node);
 		printf("%.17g\n", predict_label);
 	}
@@ -3566,25 +3555,24 @@ double predict_test(SAMPLE * audio_signal, char * path, int predict_probability)
 	return predict_label;
 }
 
-svm_node * build_node_from_signal(SAMPLE * audio_signal, char *path)
+svm_node * build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_normal)
 {
 	size_t len_path = strlen(path);
 	int row_of_training_set;
-	const char *mean_path_def = "mean.txt";
 	const char *info_path_def = "info.txt";
 	const char *config_path_def = "config.txt";
-	const char *db_path_def = "db.txt";
+	//const char *db_path_def = "db.txt";
 	char *info_path = (char *)malloc(sizeof(char) * (len_path + 8));
 	char *config_path = (char *)malloc(sizeof(char) * (len_path + 10));
-	char *db_path = (char *)malloc(sizeof(char) * (len_path + 6));
+	//char *db_path = (char *)malloc(sizeof(char) * (len_path + 6));
 	int *info;
 	int label;
 	strcpy(info_path, path);
 	strcat(info_path, info_path_def);
 	strcpy(config_path, path);
 	strcat(config_path, config_path_def);
-	strcpy(db_path, path);
-	strcat(db_path, db_path_def);
+	//strcpy(db_path, path);
+	//strcat(db_path, db_path_def);
 	FILE *config_file = fopen(config_path, "r");
 	if (config_file == NULL) {
 		fprintf(stderr, "Config file not exists!!!\n");
@@ -3593,10 +3581,8 @@ svm_node * build_node_from_signal(SAMPLE * audio_signal, char *path)
 	fscanf(config_file, "%d", &row_of_training_set);
 	info = (int *)malloc(sizeof(int) * (row_of_training_set + 2));
 	fclose(config_file);
-	
-	int size = get_number_of_sample_in_record();
-	hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(audio_signal, size);
-	int size_feature_vector = feature_vector_all_frame.row * feature_vector_all_frame.col * feature_vector_all_frame.dim;
+
+	hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(audio_signal);
 	FILE *info_file = fopen(info_path, "r");
 	if (info_file == NULL) {
 		fprintf(stderr, "info file not exists!!!\n");
@@ -3606,53 +3592,26 @@ svm_node * build_node_from_signal(SAMPLE * audio_signal, char *path)
 		fscanf(info_file, "%d", &info[i]);
 	}
 	fclose(info_file);
-	SAMPLE * db_data = (SAMPLE *)malloc(sizeof(SAMPLE) * (info[row_of_training_set + 1] * FEATSIZE));
-	
-	//SAMPLE * normalize = (SAMPLE *)malloc(sizeof(SAMPLE) * (size_feature_vector + feature_vector_all_frame.col));
-	//SAMPLE * data = (SAMPLE *)malloc(sizeof(SAMPLE) * (size_feature_vector + feature_vector_all_frame.col));
-
-	//xu ly db file o day
-	FILE *db_file = fopen(db_path, "r");
-	if (db_file == NULL) {
-		fprintf(stderr, "db file not exists !!!\n");
-		exit(1);
-	}
-	for (int i = 0; i < info[row_of_training_set + 1]; ++i) {
-		fscanf(db_file, "%d", &label);
-		for (int j = 0; j < FEATSIZE; ++j) {
-			fscanf(db_file, "%f", &db_data[i * FEATSIZE + j]);
-		}
-	}
-	fclose(db_file);
-	//them data cua file detect o day
-	db_data = (SAMPLE *)realloc(db_data, sizeof(SAMPLE)*(info[row_of_training_set + 1] + 1) * FEATSIZE);
-	for (int i = info[row_of_training_set + 1] * FEATSIZE, j = 0 ; i < (info[row_of_training_set + 1] + 1) * FEATSIZE; ++i, j++) {
-		db_data[i] = feature_vector_all_frame.data[j];
-	}
 
 	// tinh mean o day
-	SAMPLE * mean = (SAMPLE *)malloc(sizeof(SAMPLE) * feature_vector_all_frame.col);
+	SAMPLE * mean = (SAMPLE *)malloc(sizeof(SAMPLE) * FEATSIZE);
+	float sum = 0;
 	for (int i = 0; i < FEATSIZE; ++i) {
-		float sum = 0;
-		for (int j = 0; j < info[row_of_training_set + 1] + 1; ++j) {
-			sum += db_data[j*FEATSIZE + i];
-			/*if (i == 68) {
-				printf(" %d : %f :%f\n",j, data[j*FEATSIZE + i], db_data[j*FEATSIZE + i]);
-			}*/
-		}
+		sum = sum_normal[i] + feature_vector_all_frame.data[i];
 		mean[i] = sum / (info[row_of_training_set + 1] + 1);
+		sum = 0;
 		//printf("%d : %f : %f : %f\n", i, mean[i], data[info[row_of_training_set + 1] * FEATSIZE + i], sum);
 	}
 	float maximum = 0;
 	for (int j = 0; j < FEATSIZE; ++j) {
-		if (fabs(db_data[info[row_of_training_set + 1] * FEATSIZE + j]) > maximum) {
-			maximum = fabs(db_data[info[row_of_training_set + 1] * FEATSIZE + j]);
+		if (fabs(feature_vector_all_frame.data[j]) > maximum) {
+			maximum = fabs(feature_vector_all_frame.data[j]);
 		}
 	}
 
 	SAMPLE *normalize_detect = (SAMPLE *)malloc(sizeof(SAMPLE) * FEATSIZE);
 	for (int i = 0; i < FEATSIZE; ++i) {
-		normalize_detect[i] = (db_data[info[row_of_training_set + 1] * FEATSIZE + i] - mean[i]) / maximum;
+		normalize_detect[i] = (feature_vector_all_frame.data[i] - mean[i]) / maximum;
 	}
 	svm_node *node = (svm_node *)malloc(sizeof(struct svm_node) * FEATSIZE);
 	for (int i = 0; i < FEATSIZE; ++i) {
@@ -3662,26 +3621,18 @@ svm_node * build_node_from_signal(SAMPLE * audio_signal, char *path)
 
 	free(mean);
 	free(feature_vector_all_frame.data);
-	free(db_data);
 	free(normalize_detect);
 	return node;
 }
 
-void predict_test_one_time(char *path, int predict_probability) {;
-	int size;
-	char *y_n = (char *)malloc(sizeof(char) * 5);
-	SAMPLE *audio_signal = get_audio_signal_from_source(&size);
-	double label = predict_test(audio_signal, path, predict_probability);
-	
-	printf("Do you want to continue predict?(y/n)\n");
-	scanf("%s", y_n);
-	check_continue_predict(path, predict_probability, y_n);
+int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability,struct svm_model *model, SAMPLE *sum_normal) {
+	return (int)predict_test(audio_signal, path, predict_probability, model, sum_normal);
 }
 
-void check_continue_predict(char *path, int predict_probability, char *y_n) {
+void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n) {
 	if (0 == strcmp(y_n, "y")) {
 		free(y_n);
-		predict_test_one_time(path, predict_probability);
+		predict_test_one_time(audio_signal, path, predict_probability, model, sum_normal);
 	}
 	else if (0 == strcmp(y_n, "n")) {
 		free(y_n);
@@ -3692,6 +3643,6 @@ void check_continue_predict(char *path, int predict_probability, char *y_n) {
 		y_n = (char *)malloc(sizeof(char) * 5);
 		printf("wrong answer!!! Reimport answer \n");
 		scanf("%s", y_n);
-		check_continue_predict(path, predict_probability, y_n);
+		check_continue_predict(audio_signal, path, predict_probability, model, sum_normal, y_n);
 	}
 }
