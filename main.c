@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 		else {
 			predict_probability = 1;
 		}*/
-		real_time_predict(model, sum_normal);
+		real_time_predict(model, sum_normal, path);
 	}
 	return 0;
 }

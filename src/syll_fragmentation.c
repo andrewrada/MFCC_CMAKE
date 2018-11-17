@@ -1,4 +1,5 @@
 #include "syll_fragmentation.h"
+#include <sys/time.h>
 
 void check_sentence_formation(char *path, char *ext, int sent_len) {
 	FILE *fsent = fopen(path, "r");
@@ -241,7 +242,8 @@ void write_to_syll(int *d_word, char *def_name, char *ext, char*path, int *dist,
 	*d_word += 1;
 }
 
-void real_time_predict(svm_model_td *model, SAMPLE *sum_normal) {
+void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path) {
+	struct timeval tv0, tv1;
 	sent_buff = (int*)malloc(sizeof(int) * 7);
 	int order = 2;
 	float *A = (float *)malloc(sizeof(float) * order);
@@ -275,7 +277,6 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal) {
 	int temp = 1;
 	char *def_name = "syllabic";
 	char *ext = ".txt";
-	char *def_path = "./tu_trunganh_trung/";
 	///////////////////////////
 	char *def_sent = "./sentences/s_1.txt";
 	int sent_len = strlen(def_sent);
@@ -335,14 +336,20 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal) {
 					continue;
 				}
 				else {
-					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2, d3, d4,
+					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2, d3, d4,
 						w0, w1, w2, w3, w4, x, model, sum_normal);
 				}
 			}
 			else
 			{
-				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2,
+
+				gettimeofday(&tv0, 0);
+				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2,
 					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal);
+				gettimeofday(&tv1, 0);	
+				double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
+				double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
+				printf("total time silence detect : %f\n", (t1- t0) * 1000); 		
 				if (d_word == 1) {
 					p_word = d_word;
 					timer = 1;

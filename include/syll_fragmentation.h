@@ -84,7 +84,7 @@ typedef struct svm_model svm_model_td;
 #ifdef __cplusplus
 extern "C"{
 #endif
-void real_time_predict(svm_model_td *model, SAMPLE *sum_normal);
+void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path);
 void Push(float *data, int index, float *word);
 void write_to_syll(int *d_word, char *def_name, char *ext, char *path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal);
 int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
