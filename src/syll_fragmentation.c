@@ -58,7 +58,7 @@ void Push(float *data, int index, float *word) {
 }
 
 int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
-	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x, svm_model_td *model, 		SAMPLE *sum_normal) {
+	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x, svm_model_td *model, 		SAMPLE *sum_normal, PaStream *stream) {
 	x = butterworth_bandpass_v2(2, data, length, 16000, 4000, 500, A, d1, d2, d3, d4, w0, w1, w2, w3, w4, x);
 	int chunk_size = 160;
 	float sum = 0;
@@ -169,8 +169,9 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 				//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
 				Push(x, *dist - 1, word);
+				Pa_AbortStream(stream);
 				write_to_syll(d_word, def_name, ext, path, dist, word, model, sum_normal);
-
+				Pa_StartStream(stream);
 				/*free(word);
 				word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER);*/
 				//word = (float *)realloc(word, sizeof(float) * FRAMES_PER_BUFFER);
@@ -337,7 +338,7 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path) {
 				}
 				else {
 					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2, d3, d4,
-						w0, w1, w2, w3, w4, x, model, sum_normal);
+						w0, w1, w2, w3, w4, x, model, sum_normal, stream);
 				}
 			}
 			else
@@ -345,7 +346,7 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path) {
 
 				/*gettimeofday(&tv0, 0);*/
 				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2,
-					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal);
+					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal, stream);
 				/*gettimeofday(&tv1, 0);	
 				double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
 				double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;

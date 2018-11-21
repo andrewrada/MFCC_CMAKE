@@ -88,7 +88,7 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path);
 void Push(float *data, int index, float *word);
 void write_to_syll(int *d_word, char *def_name, char *ext, char *path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal);
 int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
-	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x, svm_model_td *model, 		SAMPLE *sum_normal);
+	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x, svm_model_td *model, 		SAMPLE *sum_normal, PaStream *stream);
 void check_sentence_formation(char *path, char *ext, int sent_len);
 int check_word(int word, int pword);
 #ifdef __cplusplus
