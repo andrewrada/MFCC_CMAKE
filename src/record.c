@@ -119,6 +119,11 @@ void record_audio_to_database(char *path, int *current_index)
 	check_continue(y_n, path, current_index);
 }
 
+void record_audio_to_database2(char *path, int *current_index){
+	int size;
+	SIGNAL audio_signal = real_time_record();
+}
+
 char * get_name_of_new_file(char *path, char *keyword, char *numerical_order)
 {
 	size_t len_path = strlen(path);
@@ -170,3 +175,18 @@ SAMPLE * read_audio_signal_from_file(char * path, int *size)
 	return audio_signal;
 }
 
+SIGNAL real_time_record(){
+	int order = 2;
+	float *A = (float *)malloc(sizeof(float) * order);
+	float *d1 = (float *)malloc(sizeof(float) * order);
+	float *d2 = (float *)malloc(sizeof(float) * order);
+	float *d3 = (float *)malloc(sizeof(float) * order);
+	float *d4 = (float *)malloc(sizeof(float) * order);
+
+	float *x = (float *)malloc(sizeof(float) * QUEUE_SIZE);
+	float *w0 = (float *) calloc(order, sizeof(float));
+	float *w1 = (float *) calloc(order, sizeof(float));
+	float *w2 = (float *) calloc(order, sizeof(float));
+	float *w3 = (float *) calloc(order, sizeof(float));
+	
+}
