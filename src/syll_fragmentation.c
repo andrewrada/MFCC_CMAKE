@@ -45,7 +45,7 @@ void Push(float *data, int index, float *word) {
 	else
 	{
 		for (int i = index * 160; i < (index + 1) * 160; i++) {
-			if (index * 160 < (MAX_WORD_BUFFER * FRAMES_PER_BUFFER)) {
+			if (index * 160 < (MAX_WORD_BUFFER_RECORD * FRAMES_PER_BUFFER)) {
 				word[i] = data[dem];
 				dem++;
 			}
@@ -57,8 +57,62 @@ void Push(float *data, int index, float *word) {
 	}
 }
 
+void Push2(float *data, int index, float *word, SAMPLE *final_feats, hyper_vector fbank, hyper_vector temp_feats) {
+	int dem = 480;
+	if (index == 0) {
+		for (int i = 0; i < 160; ++i) {
+			word[i] = data[dem];
+			dem++;
+		}
+	}
+	else if (index < 2)
+	{
+		for (int i = index * 160; i < (index + 1) * 160; i++) {
+			if (index * 160 < (MAX_WORD_BUFFER * FRAMES_PER_BUFFER)) {
+				word[i] = data[dem];
+				dem++;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else if (index == 2) {
+		for (int i = index * 160; i < (index + 1) * 160; i++) {
+			word[i] = data[dem];
+			dem++;
+		}
+		for (int i = 0; i < 400; ++i) {
+			temp_feats.data[i] = word[i];
+		}
+		add_to_final(final_feats, get_feature_vector_from_signal2(temp_feats, fbank), index - 2);
+	}
+	else if (index > 2) {
+		for (int i = 160; i < 480; ++i) {
+			word[i - 160] = word[i];
+			temp_feats.data[i - 160] = word[i - 160];
+		}
+		for (int i = 320; i < 480; i++) {
+			word[i] = data[dem];
+			if (i < 400) {
+				temp_feats.data[i] = word[i];
+			}
+			dem++;
+		}
+		add_to_final(final_feats, get_feature_vector_from_signal2(temp_feats, fbank), index - 2);
+		/*for (int i = index; i < index + 13; ++i) {
+			printf("%f ", final_feats[i]);
+		}
+		printf("\n");*/
+	}
+}
+
 int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
-	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x, svm_model_td *model, 		SAMPLE *sum_normal, PaStream *stream) {
+	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, 
+	float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **word, SAMPLE *final_feats,
+	hyper_vector temp_feats) {
+		
 	x = butterworth_bandpass_v2(2, data, length, 16000, 4000, 500, A, d1, d2, d3, d4, w0, w1, w2, w3, w4, x);
 	int chunk_size = 160;
 	float sum = 0;
@@ -100,12 +154,12 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 			//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 			if (!(*time)) {
 				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
-				Push(x, *dist - 1, word);
+				Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 				*time = 0;
 			}
 			else
 			{
-				Push(x, *dist - 1, word);
+				Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 				*time = 0;
 			}
 		}
@@ -125,7 +179,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 			*dist += 1;
 			//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 			//word = realloc_same_add(data, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
-			Push(x, *dist - 1, word);
+			Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 		}
 		else
 		{
@@ -136,7 +190,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 				*dist += 1;
 				//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
-				Push(x, *dist - 1, word);
+				Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 			}
 			else
 			{
@@ -157,7 +211,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 			*dist += 1;
 			//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 			//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
-			Push(x, *dist - 1, word);
+			Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 		}
 		else
 		{
@@ -168,7 +222,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 				*dist += 1;
 				//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
 				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
-				Push(x, *dist - 1, word);
+				Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 				Pa_AbortStream(stream);
 				write_to_syll(d_word, def_name, ext, path, dist, word, model, sum_normal);
 				Pa_StartStream(stream);
@@ -243,8 +297,47 @@ void write_to_syll(int *d_word, char *def_name, char *ext, char*path, int *dist,
 	*d_word += 1;
 }
 
-void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path) {
+void write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal
+	, hyper_vector fbank, char **words) {
+	/*LARGE_INTEGER Frequency;
+	QueryPerformanceFrequency(&Frequency);
+
+	start = PerformanceCounter();
+	*/
+	//SIGNAL a = setSignal2(word, (*dist)*FRAMES_PER_BUFFER);
+
+	/*double dftDuration3 = (double)(PerformanceCounter() - start) * 1000.0 / (double)Frequency.QuadPart;
+	if (dftDuration3 > 0.1)
+	printf("WRITE_TO" ": %f\n", dftDuration3);*/
+
+	//for (int i = 0; i < *dist-3; i++) {
+	//	for (int j = 0; j <  RAW_FEAT_SIZE; j++) {
+	//		printf("%f ", final_feats[i*RAW_FEAT_SIZE +j]);
+	//	}
+	//	printf("\n");
+	//}
+	hyper_vector compact_final_feats = cov(setHVector(final_feats, RAW_FEAT_SIZE, *dist - 2, 1));
+
+	int temp = predict_test_one_time(compact_final_feats, path, 0, model, sum_normal, fbank);
+
+	printf("%s\n", words[temp - 1]);
+	sent_buff[*d_word] = temp;
+	*d_word += 1;
+}
+
+void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, char *sent_path, int num_of_sents, char **words) {
 	struct timeval tv0, tv1;
+	filter_bank fbank = filterbank(26, 512);
+	hyper_vector transpose_param = setHVector(fbank.data, fbank.filt_len, fbank.nfilt, 1);	
+	hyper_vector tmp = transpose(transpose_param);
+	hyper_vector final_feats = setEHVector(RAW_FEAT_SIZE, MAX_FEATS_BUFFER, 1);
+	
+	hyper_vector temp_feats;
+	temp_feats.row = 1;
+	temp_feats.col = 400;
+	temp_feats.dim = 1;
+	temp_feats.data = (SAMPLE*)malloc(sizeof(SAMPLE) * 400);
+	
 	sent_buff = (int*)malloc(sizeof(int) * 7);
 	int order = 2;
 	float *A = (float *)malloc(sizeof(float) * order);
@@ -279,8 +372,10 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *path) {
 	char *def_name = "syllabic";
 	char *ext = ".txt";
 	///////////////////////////
-	char *def_sent = "./sentences/s_1.txt";
-	int sent_len = strlen(def_sent);
+	/*char *def_sent = "./sentences/s_1.txt";
+	int sent_len = strlen(def_sent);*/
+	
+	
 	///////////////////////////
 	int get_data_time = 0;
 	PaError err = paNoError;
@@ -403,3 +498,165 @@ int check_word(int word, int pword) {
 		return 1;
 	return 0;
 }
+
+int silence_detect_record(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
+	int *d_word, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x){
+	
+	x = butterworth_bandpass_v2(2, data, length, 16000, 4000, 500, A, d1, d2, d3, d4, w0, w1, w2, w3, w4, x);
+	int chunk_size = 160;
+	float sum = 0;
+	int trim_ms = 0;
+	int dem = 0;
+	float *db = (float *)malloc(sizeof(float) * 7);
+	while (trim_ms < length)
+	{
+		sum = 0;
+		for (int i = trim_ms; i < trim_ms + chunk_size; i++) {
+			sum += x[i] * x[i];
+		}
+		sum = sqrt(sum / chunk_size);
+		sum = 20 * log10(sum);
+		db[dem] = sum;
+		dem++;
+		trim_ms += chunk_size;
+	}
+
+	if (*time) {
+		syll[0] = (db[0] + db[1] + db[2] + db[3] + db[4] + db[5]) / 6;
+		syll[1] = (db[1] + db[2] + db[3] + db[4] + db[5] + db[6]) / 6;
+		*lowPeak1 = syll[0];
+		*lowPeak2 = 0;
+	}
+	else
+	{
+		syll[1] = (db[1] + db[2] + db[3] + db[4] + db[5] + db[6]) / 6;
+	}
+	switch (*cond_flag)
+	{
+	case 0:
+		if (*lowPeak1 < syll[1]) {
+			//printf("case 0, cond 0\n");
+			*peak = syll[1];
+			*cond_flag = 1;
+			(*dist) += 1;
+			//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
+			if (!(*time)) {
+				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
+				Push(x, *dist - 1, word);
+				*time = 0;
+			}
+			else
+			{
+				Push(x, *dist - 1, word);
+				*time = 0;
+			}
+		}
+		else if (*lowPeak1 >= syll[1]) {
+			//printf("case 0, cond 1\n");
+			*lowPeak1 = syll[1];
+		}
+		break;
+	case 1:
+		if (*peak < syll[1]) {
+			//printf("case1 cond 0.0\n");
+			*peak = syll[1];
+			*dist += 1;
+			Push(x, *dist - 1, word);
+		}
+		else
+		{
+			if (fabs(*peak - *lowPeak1) > 15) {
+				//printf("case 1 cond 0\n");
+				*lowPeak2 = syll[1];
+				*cond_flag = 2;
+				*dist += 1;
+				Push(x, *dist - 1, word);
+			}
+			else
+			{
+				//printf("case 1 cond 1\n");
+				*cond_flag = 0;
+				*dist = 0;
+				*lowPeak1 = syll[1];
+			}
+		}
+		break;
+	case 2:
+		if (*lowPeak2 > syll[1]) {
+			//printf("case 2 cond 0\n");
+			*lowPeak2 = syll[1];
+			*dist += 1;
+			//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
+			//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
+			Push(x, *dist - 1, word);
+		}
+		else
+		{
+			if (fabs(*peak - *lowPeak2) > 15 && *dist >= 14) {
+				//printf("case 2 con 1\n");
+				*lowPeak1 = syll[1];
+				*dist += 1;
+				//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
+				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
+				Push(x, *dist - 1, word);
+
+				free(db);
+				return 1;
+				/*free(word);
+				word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER);*/
+				//word = (float *)realloc(word, sizeof(float) * FRAMES_PER_BUFFER);
+				/**dist = 0;
+				*cond_flag = 0;*/
+			}
+			else if (fabs(*peak - *lowPeak2) > 10 && *dist <= 18 || *dist > 150) {
+				printf("EXCEPTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
+				*dist = 0;
+				*cond_flag = 0;
+			}
+			else
+			{
+				//printf("case 2 con 2\n");
+				*peak = syll[1];
+				*cond_flag = 3;
+				*dist += 1;
+				//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
+				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
+				Push(x, *dist - 1, word);
+			}
+		}
+		break;
+	case 3:
+		if (*peak < syll[1]) {
+			//printf("case 3 cond 1\n");
+			*peak = syll[1];
+		}
+		else
+		{
+			//printf("case 3 cond 2\n");
+			*lowPeak2 = syll[1];
+			*cond_flag = 2;
+		}
+		*dist += 1;
+		//word = (float *)realloc(word, sizeof(float) * (*dist) * FRAMES_PER_BUFFER);
+		//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
+		Push(x, *dist - 1, word);
+		break;
+	default:
+		break;
+	}
+	//free(temp_data);
+	free(db);
+	return 0;
+		
+}
+
+void add_to_final(SAMPLE *final_feats, hyper_vector temp, int num_feats) {
+	int dem = 0;
+	for (int i = num_feats * RAW_FEAT_SIZE; i < (num_feats + 1)*RAW_FEAT_SIZE; i++) {
+		final_feats[i] = temp.data[dem];
+		//printf("%f ", final_feats.data[i]);
+		dem++;
+	}
+	//printf("\n");
+}
+

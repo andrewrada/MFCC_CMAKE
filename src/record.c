@@ -119,9 +119,51 @@ void record_audio_to_database(char *path, int *current_index)
 	check_continue(y_n, path, current_index);
 }
 
+void check_continue(char *y_n, char *path, int *current_index){
+	if (0 == strcmp(y_n, "y")) {
+		free(y_n);
+		record_audio_to_database(path, current_index);
+	}
+	else if (0 == strcmp(y_n, "n")) {
+		return;
+	}
+	else {
+		free(y_n);
+		y_n = (char *)malloc(sizeof(char) * 5);
+		printf("wrong answer!!! Reimport answer \n");
+		scanf("%s", y_n);
+		check_continue(y_n, path, current_index);
+	}
+	
+}
+
 void record_audio_to_database2(char *path, int *current_index){
 	int size;
 	SIGNAL audio_signal = real_time_record();
+	int number_of_sample = audio_singal.signal_length;
+	char *keyword = (char *)malloc(sizeof(char) * 5);
+	char *numerical_order = (char *)malloc(sizeof(char) * 5);
+	char *y_n = (char *)malloc(sizeof(char) * 5);
+
+	printf("choose index of keyword \n");
+	scanf("%s", keyword);
+	*current_index = atoi(keyword);
+	printf("choose the number order of text file to save audio signal \n");
+	scanf("%s", numerical_order);
+	char *name = get_name_of_new_file(path, keyword, numerical_order);
+	FILE *fp = fopen(name, "w");
+	fprintf(fp, "%d\n", number_of_sample);
+
+	for (int i = 0; i < number_of_sample; ++i) {
+		fprintf(fp, "%f\n", audio_singal.raw_signal[i]);
+	}
+	fclose(fp);
+	free(keyword);
+	free(numerical_order);
+	free(audio_singal.raw_signal);
+	printf("Do you wanna continue to record? (y/n) \n");
+	scanf("%s", y_n);
+	check_continue(y_n, path, current_index);
 }
 
 char * get_name_of_new_file(char *path, char *keyword, char *numerical_order)
@@ -189,4 +231,113 @@ SIGNAL real_time_record(){
 	float *w2 = (float *) calloc(order, sizeof(float));
 	float *w3 = (float *) calloc(order, sizeof(float));
 	
+	float *queue = (float *)malloc(sizeof(float) * QUEUE_SIZE);
+	float *word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER_RECORD);
+	
+	int trim_ms = 0;
+	int offset = FRAMES_PER_BUFFER;
+	int flag = 1;
+	int dem = 0;
+	int succeed = 0;
+	int time = 1;
+	int cond_flag = 0;
+	float peak;
+	float syll[2];
+	int dist = 0;
+	float lowPeak1;
+	float lowPeak2;
+	int d_word = 0;
+	char def_name[3];
+	SIGNAL result;
+	int get_data_time = 0;
+	
+	PaError err = paNoError;
+	if ((err = Pa_Initialize())) goto done;
+	const PaDeviceInfo *info = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
+	//AudioData data = initAudioData(16000, 1, paFloat32);
+	AudioSnippet sampleBlock =
+	{
+		.snippet = NULL,
+		.size = FRAMES_PER_BUFFER * sizeof(float)
+	};
+	PaStream *stream = NULL;
+	sampleBlock.snippet = (float *)malloc(sampleBlock.size);
+	PaStreamParameters inputParameters =
+	{
+		.device = Pa_GetDefaultInputDevice(),
+		.channelCount = 1,
+		.sampleFormat = paFloat32,
+		.suggestedLatency = info->defaultHighInputLatency,
+		.hostApiSpecificStreamInfo = NULL
+	};
+
+	if (err = Pa_OpenStream(&stream, &inputParameters, NULL, SAMPLE_RATE, FRAMES_PER_BUFFER, paClipOff, NULL, NULL)) goto done;
+	if (err = Pa_StartStream(stream)) goto done;
+
+	for (int i = 0;;) {
+		err = Pa_ReadStream(stream, sampleBlock.snippet, FRAMES_PER_BUFFER);
+		if (err) goto done;
+		else {
+			/*for (int u = 0; u < FRAMES_PER_BUFFER; ++u) {
+				printf("%d : %f\n", u, sampleBlock.snippet[u]);
+			}
+			getchar();*/
+			if (trim_ms < QUEUE_SIZE) {
+				for (int j = trim_ms, k = 0; j < trim_ms + offset; ++j) {
+					queue[j] = sampleBlock.snippet[k];
+					k++;
+				}
+			}
+			else {
+				for (int j = FRAMES_PER_BUFFER; j < QUEUE_SIZE; ++j) {
+					queue[j - FRAMES_PER_BUFFER] = queue[j];
+				}
+				for (int j = 0; j < FRAMES_PER_BUFFER; ++j) {
+					queue[QUEUE_SIZE - FRAMES_PER_BUFFER + j] = sampleBlock.snippet[j];
+				}
+			}
+
+			if (trim_ms < QUEUE_SIZE) {
+				trim_ms += offset;
+				if (trim_ms < QUEUE_SIZE) {
+					continue;
+				}
+				else {
+					silence_detect_record(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, A, d1, d2, d3, d4,
+						w0, w1, w2, w3, w4, x);
+				}
+			}
+			else
+			{
+				succeed = silence_detect_record(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, A, d1, d2,
+					d3, d4, w0, w1, w2, w3, w4, x);
+				
+				if (succeed == 1) {
+					result = setSignal2(word, dist * FRAMES_PER_BUFFER);
+					goto done;
+				}
+				/*for (int j = FRAMES_PER_BUFFER; j < QUEUE_SIZE; ++j) {
+				queue[j - FRAMES_PER_BUFFER] = queue[j];
+				}*/
+			}
+		}
+	}
+
+done:
+	free(sampleBlock.snippet);
+	free(queue);
+	free(word);
+	free(A);
+	free(d1);
+	free(d2);
+	free(d3);
+	free(d4);
+	free(w0);
+	free(w1);
+	free(w2);
+	free(w3);
+	free(w4);
+	free(x);
+	Pa_Terminate();
+	return result;
 }

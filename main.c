@@ -11,6 +11,8 @@ extern "C" {
 }
 #endif // __cplusplus
 
+char **load_words_sent(char *sent_path, int *num_of_sents);
+
 int main(int argc, char **argv)
 {
 	int current_max_index = 0;
@@ -65,6 +67,10 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		fscanf(config, "%d", &current_max_index);
+		fclose(config);
+		filter_bank fbank = filterbank(26, 512);
+		hyper_vector transpose_param = setHVector(fbank.data, fbank.filt_len, fbank.nfilt, 1);
+		hyper_vector tmp = transpose(transpose_param);
 		create_database(path, current_max_index);
 	}
 	if (is_normalize_db) {
@@ -105,7 +111,8 @@ int main(int argc, char **argv)
 		training_normalize(path, argc, argv);
 	}
 	if (is_predict) {
-		char *path = argv[argc - 1];
+		char *sent_path = argv[argc - 1];
+		char *path = argv[argc - 2];
 		const char *model_path_def = "normalized.model";
 		const char * sum_path_def = "sum.txt";
 		size_t len_path = strlen(path);
@@ -127,6 +134,9 @@ int main(int argc, char **argv)
 		SAMPLE *sum_normal = (SAMPLE*)malloc(sizeof(SAMPLE) * 91);
 		mfcc_load_normalized_sum(sum_normal, sum_path);
 
+		int num_of_sents;
+		char **words;
+		words = load_words_sent(sent_path, &num_of_sents);
 		/*int predict_probability;
 		if (argv[2][0] != '-' && argv[2][1] != 'b') {
 			predict_probability = 0;
@@ -137,4 +147,38 @@ int main(int argc, char **argv)
 		real_time_predict(model, sum_normal, path);
 	}
 	return 0;
+}
+
+char **load_words_sent(char *sent_path, int *num_of_sents) {
+	const char* num_sent_def = "num_sents.txt";
+	size_t len_path_sent = strlen(sent_path);
+	char *num_sent = (char *)malloc(sizeof(char) * (len_path_sent + 8));
+
+	/////////////num_sent///////////
+	strcpy(num_sent, sent_path);
+	strcat(num_sent, num_sent_def);
+	FILE* fnumt = fopen(num_sent, "r");
+	fscanf(fnumt, "%d", num_of_sents);
+	fclose(fnumt);
+	////////////words list///////////
+
+	const char* lwords = "words.txt";
+	size_t len_path_word = strlen(lwords);
+	char *word_path = (char *)malloc(sizeof(char) * (len_path_sent + 8));
+	strcpy(word_path, sent_path);
+	strcat(word_path, lwords);
+
+	FILE* fword = fopen(word_path, "r");
+	int num_words;
+	fscanf(fword, "%d", &num_words);
+	char **words = (int**)malloc(num_words * sizeof(char*));
+
+	for (int i = 0; i < num_words; i++) {
+		words[i] = (char*)malloc(5 * sizeof(char));
+		fscanf(fword, "%s", words[i]);
+		printf("%s\n", words[i]);
+	}
+
+	fclose(fword);
+	return words;
 }

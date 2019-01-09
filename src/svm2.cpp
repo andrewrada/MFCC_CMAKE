@@ -3502,7 +3502,7 @@ void do_cross_validation(svm_problem * prob, svm_parameter * param)
 	free(target);
 }
 
-double predict_test(SIGNAL audio_signal, char * path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal)
+double predict_test(hyper_vector compact_final_feats, char * path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank)
 {
 	struct timeval tv0,tv1;
 	gettimeofday(&tv0, 0);
@@ -3567,7 +3567,7 @@ double predict_test(SIGNAL audio_signal, char * path, int predict_probability, s
 	return predict_label;
 }
 
-svm_node * build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_normal)
+svm_node * build_node_from_signal(hyper_vector compact_final_feats, char *path, SAMPLE *sum_normal, hyper_vector fbank)
 {
 	size_t len_path = strlen(path);
 	int row_of_training_set;
@@ -3594,7 +3594,9 @@ svm_node * build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_n
 	info = (int *)malloc(sizeof(int) * (row_of_training_set + 2));
 	fclose(config_file);
 
-	hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(audio_signal);
+	/*hyper_vector feature_vector_all_frame = get_feature_vector_from_signal(audio_signal);*/
+	int size_feature_vector = compact_final_feats.row * compact_final_feats.col * compact_final_feats.dim;
+	
 	FILE *info_file = fopen(info_path, "r");
 	if (info_file == NULL) {
 		fprintf(stderr, "info file not exists!!!\n");
@@ -3609,21 +3611,21 @@ svm_node * build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_n
 	SAMPLE * mean = (SAMPLE *)malloc(sizeof(SAMPLE) * FEATSIZE);
 	float sum = 0;
 	for (int i = 0; i < FEATSIZE; ++i) {
-		sum = sum_normal[i] + feature_vector_all_frame.data[i];
+		sum = sum_normal[i] + compact_final_feats.data[i];
 		mean[i] = sum / (info[row_of_training_set + 1] + 1);
 		sum = 0;
 		//printf("%d : %f : %f : %f\n", i, mean[i], data[info[row_of_training_set + 1] * FEATSIZE + i], sum);
 	}
 	float maximum = 0;
 	for (int j = 0; j < FEATSIZE; ++j) {
-		if (fabs(feature_vector_all_frame.data[j]) > maximum) {
-			maximum = fabs(feature_vector_all_frame.data[j]);
+		if (fabs(compact_final_feats.data[j]) > maximum) {
+			maximum = fabs(compact_final_feats.data[j]);
 		}
 	}
 
 	SAMPLE *normalize_detect = (SAMPLE *)malloc(sizeof(SAMPLE) * FEATSIZE);
 	for (int i = 0; i < FEATSIZE; ++i) {
-		normalize_detect[i] = (feature_vector_all_frame.data[i] - mean[i]) / maximum;
+		normalize_detect[i] = (compact_final_feats.data[i] - mean[i]) / maximum;
 	}
 	svm_node *node = (svm_node *)malloc(sizeof(struct svm_node) * FEATSIZE);
 	for (int i = 0; i < FEATSIZE; ++i) {
@@ -3637,8 +3639,8 @@ svm_node * build_node_from_signal(SIGNAL audio_signal, char *path, SAMPLE *sum_n
 	return node;
 }
 
-int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability,struct svm_model *model, SAMPLE *sum_normal) {
-	return (int)predict_test(audio_signal, path, predict_probability, model, sum_normal);
+int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability,struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank) {
+	return (int)predict_test(audio_signal, path, predict_probability, model, sum_normal, fbank);
 }
 
 void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n) {

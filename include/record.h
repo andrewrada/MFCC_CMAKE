@@ -59,6 +59,7 @@ typedef enum KEYWORDS {
 #ifdef __cplusplus
 extern "C" {
 #endif
+	void check_continue(char *y_n, char *path, int *current_index);
 	SAMPLE *get_audio_signal_from_source(int *size);
 	void record_audio_to_database(char *path, int *current_index);
 	void record_audio_to_database2(char *path, int *current_index);
