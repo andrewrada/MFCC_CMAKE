@@ -8,6 +8,7 @@
 #include "utils.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "kiss_fft.h"
 #include "gemm.h"
 
@@ -19,6 +20,12 @@
 #define false 0
 #define true 1
 #define FEATSIZE 91
+#ifdef UNIX64
+#define SIZE_MAX 0xffffffffffffffffui64
+#else
+#define SIZE_MAX 0xffffffff
+#endif
+
 
 typedef struct SIGNAL {
 	SAMPLE *raw_signal;
@@ -57,6 +64,7 @@ extern "C" {
 	SIGNAL setSignal(SAMPLE *a, int size);
 	SIGNAL setSignal2(SAMPLE *a, int size);
 	hyper_vector setHVector(SAMPLE *a, int col, int row, int dim);
+	hyper_vector setEHVector(int col, int row, int dim);
 	
 	hyper_vector getFrames(struct SIGNAL a);
 	void append_energy(hyper_vector dct, hyper_vector pow_spec);
@@ -90,6 +98,7 @@ extern "C" {
 	hyper_vector var(hyper_vector);
 
 	hyper_vector get_feature_vector_from_signal(SIGNAL a, hyper_vector fbank);
+	hyper_vector get_feature_vector_from_signal2(hyper_vector a, hyper_vector fbank);
 	void write_feature_vector_to_database(hyper_vector feature_vector, char *name);
 
 	////////////////////////////////

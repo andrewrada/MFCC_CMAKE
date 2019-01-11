@@ -3507,7 +3507,7 @@ double predict_test(hyper_vector compact_final_feats, char * path, int predict_p
 	struct timeval tv0,tv1;
 	gettimeofday(&tv0, 0);
 				
-	svm_node *node = build_node_from_signal(audio_signal, path, sum_normal);
+	svm_node *node = build_node_from_signal(compact_final_feats, path, sum_normal, fbank);
 	gettimeofday(&tv1, 0);	
 	double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
 	double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
@@ -3634,19 +3634,23 @@ svm_node * build_node_from_signal(hyper_vector compact_final_feats, char *path, 
 	}
 
 	free(mean);
-	free(feature_vector_all_frame.data);
 	free(normalize_detect);
 	return node;
 }
 
 int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability,struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank) {
-	return (int)predict_test(audio_signal, path, predict_probability, model, sum_normal, fbank);
+	//return (int)predict_test(audio_signal, path, predict_probability, model, sum_normal, fbank);
+	return 1;
 }
 
-void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n) {
+int predict_one_time(hyper_vector compact_final_feats, char *path, int predict_probability,struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank){
+	return (int)predict_test(compact_final_feats, path, predict_probability, model, sum_normal, fbank);
+}
+
+void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n, hyper_vector fbank) {
 	if (0 == strcmp(y_n, "y")) {
 		free(y_n);
-		predict_test_one_time(audio_signal, path, predict_probability, model, sum_normal);
+		predict_test_one_time(audio_signal, path, predict_probability, model, sum_normal, fbank);
 	}
 	else if (0 == strcmp(y_n, "n")) {
 		free(y_n);
@@ -3657,6 +3661,6 @@ void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probabi
 		y_n = (char *)malloc(sizeof(char) * 5);
 		printf("wrong answer!!! Reimport answer \n");
 		scanf("%s", y_n);
-		check_continue_predict(audio_signal, path, predict_probability, model, sum_normal, y_n);
+		check_continue_predict(audio_signal, path, predict_probability, model, sum_normal, y_n, fbank);
 	}
 }

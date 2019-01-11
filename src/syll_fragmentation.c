@@ -1,35 +1,51 @@
 #include "syll_fragmentation.h"
 #include <sys/time.h>
 
-void check_sentence_formation(char *path, char *ext, int sent_len) {
-	FILE *fsent = fopen(path, "r");
+void check_sentence_formation(char *path, char *ext, int sent_len, char *wtemp, int num_of_sents) {
+	char *label = (char *)malloc(sizeof(char) * 2);
+	const char *default_ext = ".txt";
+	size_t lent_path_tmp = strlen(path) + strlen(label) + 5;
+	char *temp = (char *)malloc(sizeof(char) * lent_path_tmp);
+	FILE *fsent;
+	int num, dtemp, succeed = 0;
+	for(int i = 0; i < num_of_sents; ++i){
+		sprintf(label, "%d", i+1);
+		strcpy(temp, path);
+		strcat(temp, "s_");
+		strcat(temp, "label");
+		strcat(temp, default_ext);
+		fsent = fopen(temp, "r");
 
-	if (fsent == NULL) {
-		printf("FILE DOESN'T EXIST!!");
-		exit(1);
-	}
-	int dtemp, index = 0, succeed = 0;
-
-	while (fscanf(fsent, "%d", &dtemp) != EOF) {
-		if (dtemp == sent_buff[index]) {
-			succeed = 0;
+		if(fsent == NULL){
+			fprintf(stderr, "File Doesn't exist!!!\n");
+			exit(1);
 		}
-		else {
-			succeed = 1;
-			break;
+		fscanf(fsent, "%d", &num);
+		for(int j = 0; j < num; ++j){
+			fscanf(fsent, "%d", &dtemp);
+			if(dtemp == sent_buff[j]){
+				succeed = 0;
+			}
+			else{
+				succeed = 1;
+				break;
+			}
 		}
-		index++;
-	}
-	if (succeed == 0) {
-		printf("VALID SENTENCE: ");	//return true
-		for (int i = 0; i < sent_len; i++) {
-			printf("%s ", sent_buff[i] == 2 ? "mo" : (sent_buff[i] == 3 ? "cua" : sent_buff[i] == 4 ? "truoc" : "ra"));
+		if(succeed == 0){
+			printf("VALID SENTENCE: ");
+			for(int k = 0; k < num; ++k){
+				fscanf(fsent, "%s", wtemp);
+				printf("%s", wtemp);
+				sent_buff[k] = 0;
+			}
+			fscanf(fsent, "%s", wtemp);
+			printf("%s", wtemp);
 		}
+		fclose(temp);
 	}
-	else {
-		printf("INVALID SENTENCE!! ");	//return true
+	if(succeed == 1){
+		printf("INVALID SENTENCE!!!\n");
 	}
-	fclose(fsent);
 }
 
 
@@ -110,7 +126,7 @@ void Push2(float *data, int index, float *word, SAMPLE *final_feats, hyper_vecto
 
 int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
 	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, 
-	float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **word, SAMPLE *final_feats,
+	float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
 	hyper_vector temp_feats) {
 		
 	x = butterworth_bandpass_v2(2, data, length, 16000, 4000, 500, A, d1, d2, d3, d4, w0, w1, w2, w3, w4, x);
@@ -224,7 +240,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 				//word = realloc_same_add(word, (*dist - 1) * FRAMES_PER_BUFFER, (*dist) * FRAMES_PER_BUFFER);
 				Push2(x, *dist - 1, word, final_feats, fbank, temp_feats);
 				Pa_AbortStream(stream);
-				write_to_syll(d_word, def_name, ext, path, dist, word, model, sum_normal);
+				write_to_syll2(d_word, def_name, ext, path, dist, final_feats, model, sum_normal, fbank, words);
 				Pa_StartStream(stream);
 				/*free(word);
 				word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER);*/
@@ -269,9 +285,9 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 	return succeed;
 }
 
-void write_to_syll(int *d_word, char *def_name, char *ext, char*path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal) {
+void write_to_syll(int *d_word, char *def_name, char *ext, char*path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal, hyper_vector fbank) {
 	SIGNAL a = setSignal2(word, (*dist)*FRAMES_PER_BUFFER);
-	int temp = predict_test_one_time(a, path, 0, model, sum_normal);
+	int temp = predict_test_one_time(a, path, 0, model, sum_normal, fbank);
 	if (temp == 1) {
 		printf("tu\n");
 		sent_buff[*d_word] = 1;
@@ -318,7 +334,7 @@ void write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist
 	//}
 	hyper_vector compact_final_feats = cov(setHVector(final_feats, RAW_FEAT_SIZE, *dist - 2, 1));
 
-	int temp = predict_test_one_time(compact_final_feats, path, 0, model, sum_normal, fbank);
+	int temp = predict_one_time(compact_final_feats, path, 0, model, sum_normal, fbank);
 
 	printf("%s\n", words[temp - 1]);
 	sent_buff[*d_word] = temp;
@@ -355,6 +371,7 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 
 	float *queue = (float *)malloc(sizeof(float) * QUEUE_SIZE);
 	float *word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER);
+	char *wtemp = (char *)malloc(sizeof(char) * 8);
 	int trim_ms = 0;
 	int offset = FRAMES_PER_BUFFER;
 	int flag = 1;
@@ -432,16 +449,16 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 					continue;
 				}
 				else {
-					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2, d3, d4,
-						w0, w1, w2, w3, w4, x, model, sum_normal, stream);
+					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2, d3, d4,
+						w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats);
 				}
 			}
 			else
 			{
 
 				/*gettimeofday(&tv0, 0);*/
-				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, path, A, d1, d2,
-					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal, stream);
+				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2,
+					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats);
 				/*gettimeofday(&tv1, 0);	
 				double t0 = (double)tv0.tv_sec	+ (double)tv0.tv_usec / 1000000;
 				double t1 = (double)tv1.tv_sec + (double)tv1.tv_usec / 1000000;
@@ -462,7 +479,7 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 				if (timer) {
 					tdem++;
 					if (tdem > 100) {
-						check_sentence_formation(def_sent, ext, d_word);
+						check_sentence_formation(sent_path, ext, d_word, wtemp, num_of_sents);
 						d_word = p_word = 0;
 						tdem = 0;
 						timer = 0;
@@ -658,5 +675,160 @@ void add_to_final(SAMPLE *final_feats, hyper_vector temp, int num_feats) {
 		dem++;
 	}
 	//printf("\n");
+}
+
+void record_audio_to_database2(char *path, int *current_index){
+	int size;
+	SIGNAL audio_signal = real_time_record();
+	int number_of_sample = audio_signal.signal_length;
+	char *keyword = (char *)malloc(sizeof(char) * 5);
+	char *numerical_order = (char *)malloc(sizeof(char) * 5);
+	char *y_n = (char *)malloc(sizeof(char) * 5);
+
+	printf("choose index of keyword \n");
+	scanf("%s", keyword);
+	*current_index = atoi(keyword);
+	printf("choose the number order of text file to save audio signal \n");
+	scanf("%s", numerical_order);
+	char *name = get_name_of_new_file(path, keyword, numerical_order);
+	FILE *fp = fopen(name, "w");
+	fprintf(fp, "%d\n", number_of_sample);
+
+	for (int i = 0; i < number_of_sample; ++i) {
+		fprintf(fp, "%f\n", audio_signal.raw_signal[i]);
+	}
+	fclose(fp);
+	free(keyword);
+	free(numerical_order);
+	free(audio_signal.raw_signal);
+	printf("Do you wanna continue to record? (y/n) \n");
+	scanf("%s", y_n);
+	check_continue(y_n, path, current_index);
+}
+
+SIGNAL real_time_record(){
+	int order = 2;
+	float *A = (float *)malloc(sizeof(float) * order);
+	float *d1 = (float *)malloc(sizeof(float) * order);
+	float *d2 = (float *)malloc(sizeof(float) * order);
+	float *d3 = (float *)malloc(sizeof(float) * order);
+	float *d4 = (float *)malloc(sizeof(float) * order);
+
+	float *x = (float *)malloc(sizeof(float) * QUEUE_SIZE);
+	float *w0 = (float *) calloc(order, sizeof(float));
+	float *w1 = (float *) calloc(order, sizeof(float));
+	float *w2 = (float *) calloc(order, sizeof(float));
+	float *w3 = (float *) calloc(order, sizeof(float));
+	float *w4 = (float *) calloc(order, sizeof(float));
+	
+	float *queue = (float *)malloc(sizeof(float) * QUEUE_SIZE);
+	float *word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER_RECORD);
+	
+	int trim_ms = 0;
+	int offset = FRAMES_PER_BUFFER;
+	int flag = 1;
+	int dem = 0;
+	int succeed = 0;
+	int time = 1;
+	int cond_flag = 0;
+	float peak;
+	float syll[2];
+	int dist = 0;
+	float lowPeak1;
+	float lowPeak2;
+	int d_word = 0;
+	char def_name[3];
+	SIGNAL result;
+	int get_data_time = 0;
+	
+	PaError err = paNoError;
+	if ((err = Pa_Initialize())) goto done;
+	const PaDeviceInfo *info = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
+	//AudioData data = initAudioData(16000, 1, paFloat32);
+	AudioSnippet sampleBlock =
+	{
+		.snippet = NULL,
+		.size = FRAMES_PER_BUFFER * sizeof(float)
+	};
+	PaStream *stream = NULL;
+	sampleBlock.snippet = (float *)malloc(sampleBlock.size);
+	PaStreamParameters inputParameters =
+	{
+		.device = Pa_GetDefaultInputDevice(),
+		.channelCount = 1,
+		.sampleFormat = paFloat32,
+		.suggestedLatency = info->defaultHighInputLatency,
+		.hostApiSpecificStreamInfo = NULL
+	};
+
+	if (err = Pa_OpenStream(&stream, &inputParameters, NULL, SAMPLE_RATE, FRAMES_PER_BUFFER, paClipOff, NULL, NULL)) goto done;
+	if (err = Pa_StartStream(stream)) goto done;
+
+	for (int i = 0;;) {
+		err = Pa_ReadStream(stream, sampleBlock.snippet, FRAMES_PER_BUFFER);
+		if (err) goto done;
+		else {
+			/*for (int u = 0; u < FRAMES_PER_BUFFER; ++u) {
+				printf("%d : %f\n", u, sampleBlock.snippet[u]);
+			}
+			getchar();*/
+			if (trim_ms < QUEUE_SIZE) {
+				for (int j = trim_ms, k = 0; j < trim_ms + offset; ++j) {
+					queue[j] = sampleBlock.snippet[k];
+					k++;
+				}
+			}
+			else {
+				for (int j = FRAMES_PER_BUFFER; j < QUEUE_SIZE; ++j) {
+					queue[j - FRAMES_PER_BUFFER] = queue[j];
+				}
+				for (int j = 0; j < FRAMES_PER_BUFFER; ++j) {
+					queue[QUEUE_SIZE - FRAMES_PER_BUFFER + j] = sampleBlock.snippet[j];
+				}
+			}
+
+			if (trim_ms < QUEUE_SIZE) {
+				trim_ms += offset;
+				if (trim_ms < QUEUE_SIZE) {
+					continue;
+				}
+				else {
+					silence_detect_record(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, A, d1, d2, d3, d4,
+						w0, w1, w2, w3, w4, x);
+				}
+			}
+			else
+			{
+				succeed = silence_detect_record(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, A, d1, d2,
+					d3, d4, w0, w1, w2, w3, w4, x);
+				
+				if (succeed == 1) {
+					result = setSignal2(word, dist * FRAMES_PER_BUFFER);
+					goto done;
+				}
+				/*for (int j = FRAMES_PER_BUFFER; j < QUEUE_SIZE; ++j) {
+				queue[j - FRAMES_PER_BUFFER] = queue[j];
+				}*/
+			}
+		}
+	}
+
+done:
+	free(sampleBlock.snippet);
+	free(queue);
+	free(word);
+	free(A);
+	free(d1);
+	free(d2);
+	free(d3);
+	free(d4);
+	free(w0);
+	free(w1);
+	free(w2);
+	free(w3);
+	free(w4);
+	free(x);
+	Pa_Terminate();
+	return result;
 }
 

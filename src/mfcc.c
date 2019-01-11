@@ -654,6 +654,16 @@ hyper_vector setHVector(SAMPLE * a, int col, int row, int dim)
 	return temp_vector;
 }
 
+hyper_vector setEHVector(int col, int row, int dim){
+	hyper_vector temp_vector;
+	temp_vector.col = col;
+	temp_vector.row = row;
+	temp_vector.dim = dim;
+	temp_vector.data = (SAMPLE *)malloc(sizeof(SAMPLE) * row * dim * col);
+
+	return temp_vector;
+}
+
 hyper_vector getFrames(SIGNAL a)
 {
 	int signal_len = a.signal_length;
@@ -1061,4 +1071,14 @@ void mfcc_load_normalized_sum(SAMPLE * sum_normal,char *path)
 		fscanf(f, "%f", &sum_normal[i]);
 	}
 	fclose(f);
+}
+
+hyper_vector get_feature_vector_from_signal2(hyper_vector a, hyper_vector fbank){
+	hyper_vector power_spec = fft(a, 512);
+	hyper_vector apply = multiply(power_spec, fbank);
+	hyper_vector test = DCT2(apply, 13);
+	append_energy(test, power_spec);
+	free(apply.data);
+	free(power_spec.data);
+	return test;
 }

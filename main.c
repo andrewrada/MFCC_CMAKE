@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 		filter_bank fbank = filterbank(26, 512);
 		hyper_vector transpose_param = setHVector(fbank.data, fbank.filt_len, fbank.nfilt, 1);
 		hyper_vector tmp = transpose(transpose_param);
-		create_database(path, current_max_index);
+		create_database(path, current_max_index, tmp);
 	}
 	if (is_normalize_db) {
 		char *path = argv[2];
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 		else {
 			predict_probability = 1;
 		}*/
-		real_time_predict(model, sum_normal, path);
+		real_time_predict(model, sum_normal, path, sent_path, num_of_sents, words);
 	}
 	return 0;
 }

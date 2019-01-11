@@ -111,7 +111,9 @@ extern "C" {
 	struct svm_node *build_node_from_signal(hyper_vector compact_final_feats, char *path, SAMPLE *sum_normal, hyper_vector fbank);
 	int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability, struct svm_model *model,SAMPLE *sum_normal,
 							hyper_vector fbank);
-	void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n);
+	int predict_one_time(hyper_vector compact_final_feats, char *path, int predict_probability, struct svm_model *model,SAMPLE *sum_normal,
+							hyper_vector fbank);
+	void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n, hyper_vector fbank);
 #ifdef __cplusplus
 }
 #endif

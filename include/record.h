@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "portaudio.h"
-#include "mfcc.h"
-#include "syll_fragmentation.h"
 
 /*defines, constants
 -------------------------------------------
@@ -62,12 +60,10 @@ extern "C" {
 	void check_continue(char *y_n, char *path, int *current_index);
 	SAMPLE *get_audio_signal_from_source(int *size);
 	void record_audio_to_database(char *path, int *current_index);
-	void record_audio_to_database2(char *path, int *current_index);
 	char *get_name_of_new_file(char *path, char *keyword, char *numerical_order);
 	KEYWORDS get_key_word(int key);
 	int get_number_of_sample_in_record();
 	SAMPLE* read_audio_signal_from_file(char *path, int *size);
-	SIGNAL real_time_record();
 #ifdef __cplusplus
 }
 #endif

@@ -31,6 +31,8 @@ math.h
 -
 stdio.h
 -
+stdbool.h
+-
 kiss_fft.h
 ../include/kiss_fft.h
 gemm.h
