@@ -116,43 +116,45 @@ svm2.h
 record.h
 ../include/record.h
 
-/home/anhnt/MFCC_CMake_Test/src/augmentation.c
+/home/pi/MFCC_CMAKE/src/augmentation.c
 augmentation.h
-/home/anhnt/MFCC_CMake_Test/src/augmentation.h
+/home/pi/MFCC_CMAKE/src/augmentation.h
 
-/home/anhnt/MFCC_CMake_Test/src/filter.c
+/home/pi/MFCC_CMAKE/src/filter.c
 filter.h
-/home/anhnt/MFCC_CMake_Test/src/filter.h
+/home/pi/MFCC_CMAKE/src/filter.h
 
-/home/anhnt/MFCC_CMake_Test/src/gemm.c
+/home/pi/MFCC_CMAKE/src/gemm.c
 gemm.h
-/home/anhnt/MFCC_CMake_Test/src/gemm.h
+/home/pi/MFCC_CMAKE/src/gemm.h
 
-/home/anhnt/MFCC_CMake_Test/src/kiss_fft.c
+/home/pi/MFCC_CMAKE/src/kiss_fft.c
 _kiss_fft_guts.h
-/home/anhnt/MFCC_CMake_Test/src/_kiss_fft_guts.h
+/home/pi/MFCC_CMAKE/src/_kiss_fft_guts.h
 
-/home/anhnt/MFCC_CMake_Test/src/mfcc.c
+/home/pi/MFCC_CMAKE/src/mfcc.c
 mfcc.h
-/home/anhnt/MFCC_CMake_Test/src/mfcc.h
+/home/pi/MFCC_CMAKE/src/mfcc.h
 
-/home/anhnt/MFCC_CMake_Test/src/record.c
+/home/pi/MFCC_CMAKE/src/record.c
 record.h
-/home/anhnt/MFCC_CMake_Test/src/record.h
+/home/pi/MFCC_CMAKE/src/record.h
 
-/home/anhnt/MFCC_CMake_Test/src/svm.c
+/home/pi/MFCC_CMAKE/src/svm.c
 svm.h
-/home/anhnt/MFCC_CMake_Test/src/svm.h
+/home/pi/MFCC_CMAKE/src/svm.h
 
-/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.c
+/home/pi/MFCC_CMAKE/src/syll_fragmentation.c
 syll_fragmentation.h
-/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.h
+/home/pi/MFCC_CMAKE/src/syll_fragmentation.h
 sys/time.h
 -
+time.h
+-
 
-/home/anhnt/MFCC_CMake_Test/src/utils.c
+/home/pi/MFCC_CMAKE/src/utils.c
 utils.h
-/home/anhnt/MFCC_CMake_Test/src/utils.h
+/home/pi/MFCC_CMAKE/src/utils.h
 
-/home/anhnt/portaudio/include/portaudio.h
+/home/pi/portaudio/include/portaudio.h
 

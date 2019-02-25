@@ -1,1 +1,1 @@
-/usr/bin/cc  -g   CMakeFiles/voiceDetect.dir/main.c.o  -o voiceDetect  -L/usr/local/lib  -L/home/anhnt/MFCC_CMake_Test/build -rdynamic -lvoiceDetection -Wl,-rpath,/usr/local/lib:/home/anhnt/MFCC_CMake_Test/build 
+/usr/bin/cc  -g   CMakeFiles/voiceDetect.dir/main.c.o  -o voiceDetect  -L/usr/local/lib  -L/home/pi/MFCC_CMAKE/build -Wl,-rpath,/usr/local/lib:/home/pi/MFCC_CMAKE/build -rdynamic -lvoiceDetection 

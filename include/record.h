@@ -14,7 +14,7 @@
 -------------------------------------------*/
 
 #define SAMPLE_RATE  (16000)
-#define FRAMES_PER_BUFFER (1024)
+#define FRAMES_PER_BUFFER (160)
 #define NUM_SECONDS     (5)
 #define NUM_CHANNELS    (1)
 #define NUMBER_OF_ELEMENTS_IN_A_ROW		(100)

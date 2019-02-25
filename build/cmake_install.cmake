@@ -1,4 +1,4 @@
-# Install script for directory: /home/anhnt/MFCC_CMake_Test
+# Install script for directory: /home/pi/MFCC_CMAKE
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -32,13 +32,7 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
   set(CMAKE_INSTALL_SO_NO_EXE "1")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
-    file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so"
-         RPATH "")
-  endif()
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
    "/usr/lib/libvoiceDetection.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
@@ -47,17 +41,7 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/anhnt/MFCC_CMake_Test/build/libvoiceDetection.so")
-  if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
-    file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so"
-         OLD_RPATH "/usr/local/lib:"
-         NEW_RPATH "")
-    if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
-    endif()
-  endif()
+file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/pi/MFCC_CMAKE/build/CMakeFiles/CMakeRelink.dir/libvoiceDetection.so")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -68,5 +52,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/anhnt/MFCC_CMake_Test/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/pi/MFCC_CMAKE/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

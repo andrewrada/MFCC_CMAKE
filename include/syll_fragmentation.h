@@ -14,7 +14,7 @@
 #include "Sysinfoapi.h"
 #endif
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 #include "svm2.h"
 #ifdef __cplusplus
@@ -24,7 +24,7 @@ extern "C"{
 #define SAMPLE float
 /*constants, variables--------
 ------------------------------*/
-long long start, stop, sample_start,last;
+long long start, stop, sample_start, last;
 int tflag = 0;
 int tdem = 0;
 int *sent_buff;
@@ -48,11 +48,11 @@ int *sent_buff;
 ------------------------------------------*/
 #define FRAMES_PER_BUFFER 160
 #define QUEUE_SIZE	1120
-#define SAMPLE_RATE	16000
+#define SAMPLE_RATE	16000.0
 #define MAX_WORD_BUFFER	3
-#define MAX_WORD_BUFFER_RECORD	200
+#define MAX_WORD_BUFFER_RECORD	100
 #define RAW_FEAT_SIZE	13
-#define MAX_FEATS_BUFFER	200
+#define MAX_FEATS_BUFFER	100
 
 typedef struct
 {
@@ -81,30 +81,45 @@ typedef struct
 };*/
 
 typedef struct svm_model svm_model_td;
+typedef struct svm_node svm_node_td;
+
+float *false_data;
+int errflag = 1;
 
 /*functions--------------------
 ------------------------------*/
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
-void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, char *sent_path, int num_of_sents, char **words);
-void Push(float *data, int index, float *word);
-void Push2(float *data, int index, float *word, SAMPLE *final_feats, hyper_vector fbank, hyper_vector temp_feats);
-void write_to_syll(int *d_word, char *def_name, char *ext, char *path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal, hyper_vector fbank);
-void write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal, 
-					hyper_vector fbank, char **words);
-int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
-	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3,
-	float *w4, float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
-	hyper_vector temp_feats);
-void check_sentence_formation(char *path, char *ext, int sent_len, char *wtemp, int num_of_sents);
-int check_word(int word, int pword);
-int silence_detect_record(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
-	int *d_word, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x);
-void add_to_final(SAMPLE *final_feats, hyper_vector temp, int num_feats);
-void record_audio_to_database2(char *path, int *current_index);
-SIGNAL real_time_record();
-	
+	void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, char *sent_path, int num_of_sents, char **words);
+	void Push(float *data, int index, float *word);
+	//void Push2(float *data, int index, float *word, SAMPLE *final_feats, hyper_vector fbank, hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out);
+	void Push2(float *data, int index, float *word, SAMPLE *final_feats, hyper_vector fbank, hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct, float *temp);
+
+	void write_to_syll(int *d_word, char *def_name, char *ext, char *path, int *dist, float *word, svm_model_td *model, SAMPLE *sum_normal, hyper_vector fbank);
+	/*void write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal,
+		hyper_vector fbank, char **words);*/
+		//int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank, char **words);
+	int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal
+		, hyper_vector fbank, char **words, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp);
+
+	/*int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
+		int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4,
+		float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
+		hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, float *db);
+*/
+	int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
+		int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4,
+		float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
+		hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, float *db, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp);
+	void check_sentence_formation(char *path, char *ext, int sent_len, char *wtemp, int num_of_sents);
+	int check_word(int word, int pword);
+	int silence_detect_record(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
+		int *d_word, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4, float *x);
+	void add_to_final(SAMPLE *final_feats, hyper_vector temp, int num_feats);
+	void record_audio_to_database2(char *path, int *current_index);
+	SIGNAL real_time_record();
+
 #ifdef __cplusplus
 }
 #endif

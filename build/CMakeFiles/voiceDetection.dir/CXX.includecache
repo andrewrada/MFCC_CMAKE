@@ -58,7 +58,7 @@ record.h
 record.h
 ../include/record.h
 
-/home/anhnt/MFCC_CMake_Test/src/svm2.cpp
+/home/pi/MFCC_CMAKE/src/svm2.cpp
 math.h
 -
 stdio.h
@@ -82,7 +82,7 @@ errno.h
 sys/time.h
 -
 svm2.h
-/home/anhnt/MFCC_CMake_Test/src/svm2.h
+/home/pi/MFCC_CMAKE/src/svm2.h
 
-/home/anhnt/portaudio/include/portaudio.h
+/home/pi/portaudio/include/portaudio.h
 

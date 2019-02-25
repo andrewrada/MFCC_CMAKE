@@ -5,15 +5,15 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/anhnt/MFCC_CMake_Test/src/augmentation.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/augmentation.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/filter.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/filter.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/gemm.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/gemm.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/kiss_fft.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/mfcc.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/mfcc.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/record.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/record.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/svm.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/svm.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/syll_fragmentation.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o"
-  "/home/anhnt/MFCC_CMake_Test/src/utils.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/utils.c.o"
+  "/home/pi/MFCC_CMAKE/src/augmentation.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/augmentation.c.o"
+  "/home/pi/MFCC_CMAKE/src/filter.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/filter.c.o"
+  "/home/pi/MFCC_CMAKE/src/gemm.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/gemm.c.o"
+  "/home/pi/MFCC_CMAKE/src/kiss_fft.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o"
+  "/home/pi/MFCC_CMAKE/src/mfcc.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/mfcc.c.o"
+  "/home/pi/MFCC_CMAKE/src/record.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/record.c.o"
+  "/home/pi/MFCC_CMAKE/src/svm.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/svm.c.o"
+  "/home/pi/MFCC_CMAKE/src/syll_fragmentation.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o"
+  "/home/pi/MFCC_CMAKE/src/utils.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/utils.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
@@ -25,10 +25,10 @@ set(CMAKE_TARGET_DEFINITIONS_C
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "../include"
-  "/home/anhnt/portaudio/include"
+  "/home/pi/portaudio/include"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/anhnt/MFCC_CMake_Test/src/svm2.cpp" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetection.dir/src/svm2.cpp.o"
+  "/home/pi/MFCC_CMAKE/src/svm2.cpp" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir/src/svm2.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -40,7 +40,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
-  "/home/anhnt/portaudio/include"
+  "/home/pi/portaudio/include"
   )
 
 # Targets to which this target links.

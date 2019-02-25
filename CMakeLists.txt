@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(MFCC_CMake_Test)
 set(CMAKE_BUILD_TYPE Debug)
-set(HOME_DIR /home/artik)
+set(HOME_DIR /home/pi)
 set(PORT_AUDIO_DIR ${HOME_DIR}/portaudio)
 set(GLOBAL_LIB /usr/local/lib)
 set(LIB_LINK_LIBS libportaudio.so)
@@ -24,8 +24,7 @@ target_link_libraries(voiceDetection ${LIB_LINK_LIBS})
 
 project(MFCC_CMake_Exe)
 set(CMAKE_BUILD_TYPE Debug)
-set(HOME_DIR /home/artik)
-set(PORT_AUDIO_DIR ${HOME_DIR}/portaudio)
+set(HOME_DIR /home/pi)
 set(PROJECT_LINK_LIBS libvoiceDetection.so)
 link_directories(${HOME_DIR}/MFCC_CMAKE/build)
 
@@ -34,8 +33,3 @@ add_definitions(-DUNIX)
 
 add_executable(voiceDetect main.c)
 target_link_libraries(voiceDetect ${PROJECT_LINK_LIBS})
-
-
-
-
-

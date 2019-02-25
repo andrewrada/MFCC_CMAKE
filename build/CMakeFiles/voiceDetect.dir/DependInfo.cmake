@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/anhnt/MFCC_CMake_Test/main.c" "/home/anhnt/MFCC_CMake_Test/build/CMakeFiles/voiceDetect.dir/main.c.o"
+  "/home/pi/MFCC_CMAKE/main.c" "/home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetect.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
@@ -16,7 +16,7 @@ set(CMAKE_TARGET_DEFINITIONS_C
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "../include"
-  "/home/anhnt/portaudio/include"
+  "/home/pi/portaudio/include"
   )
 
 # Targets to which this target links.

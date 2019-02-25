@@ -12,6 +12,7 @@ extern "C" {
 
 	extern int libsvm_version;
 
+
 	struct svm_node
 	{
 		int index;
@@ -91,6 +92,11 @@ extern "C" {
 
 	double svm_predict_values(const struct svm_model *model, const struct svm_node *x, double* dec_values);
 	double svm_predict(const struct svm_model *model, const struct svm_node *x);
+	/////////////////////////
+	double svm_predict_test(const struct svm_model *model, const struct svm_node *x, int errflag);
+	double svm_predict_values_test(const struct svm_model *model, const struct svm_node *x, double* dec_values, int errflag);
+	//////////////////////////
+
 	double svm_predict_probability(const struct svm_model *model, const struct svm_node *x, double* prob_estimates);
 
 	void svm_free_model_content(struct svm_model *model_ptr);
@@ -107,12 +113,15 @@ extern "C" {
 
 	void training_normalize(char *path, int argc, char **argv);
 	void do_cross_validation(struct svm_problem *prob, struct svm_parameter *param);
-	double predict_test(hyper_vector compact_final_feats, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank);
-	struct svm_node *build_node_from_signal(hyper_vector compact_final_feats, char *path, SAMPLE *sum_normal, hyper_vector fbank);
+	double predict_test(hyper_vector compact_final_feats, char *path, int predict_probability, struct svm_model *model,
+		SAMPLE *sum_normal, hyper_vector fbank, int errflag, struct svm_node *node, int *infoV, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set);
+	
+	struct svm_node *build_node_from_signal(hyper_vector compact_final_feats, char *path, SAMPLE *sum_normal,
+		hyper_vector fbank, int errflag, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set);
 	int predict_test_one_time(SIGNAL audio_signal,char *path, int predict_probability, struct svm_model *model,SAMPLE *sum_normal,
 							hyper_vector fbank);
 	int predict_one_time(hyper_vector compact_final_feats, char *path, int predict_probability, struct svm_model *model,SAMPLE *sum_normal,
-							hyper_vector fbank);
+							hyper_vector fbank, int errflag, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set);
 	void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n, hyper_vector fbank);
 #ifdef __cplusplus
 }
