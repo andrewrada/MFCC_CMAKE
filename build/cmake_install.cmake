@@ -33,6 +33,12 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so"
+         RPATH "")
+  endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
    "/usr/lib/libvoiceDetection.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
@@ -41,7 +47,17 @@ if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMP
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/pi/MFCC_CMAKE/build/CMakeFiles/CMakeRelink.dir/libvoiceDetection.so")
+file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/pi/MFCC_CMAKE/build/libvoiceDetection.so")
+  if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so"
+         OLD_RPATH "/usr/local/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
+    endif()
+  endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

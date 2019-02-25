@@ -1195,7 +1195,7 @@ hyper_vector get_feature_vector_from_signal2(hyper_vector a, hyper_vector fbank,
 
 	DCT3(matrix, 13, dct, temp);
 
-	printf("%f %f %f ", dct.data[0], dct.data[1], dct.data[2]);
+	//printf("%f %f %f ", dct.data[0], dct.data[1], dct.data[2]);
 
 	append_energy(dct, pow_spectrum);
 	//printf("%f %f %f ", dct.data[0], dct.data[1], dct.data[2]);

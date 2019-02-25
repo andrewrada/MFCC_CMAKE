@@ -61,6 +61,7 @@ void runtest() {
 
 int main(int argc, char **argv)
 {
+	printf("cc");
 	int current_max_index = 0;
 	int is_record = find_args(argc, argv, "-record");
 	int is_create_database = find_args(argc, argv, "-createdb");
@@ -164,6 +165,8 @@ int main(int argc, char **argv)
 	if (is_predict) {
 		char *sent_path = argv[argc - 1];
 		char *path = argv[argc - 2];
+		printf("cc");
+
 		const char *model_path_def = "normalized.model";
 		const char * sum_path_def = "sum.txt";
 		size_t len_path = strlen(path);

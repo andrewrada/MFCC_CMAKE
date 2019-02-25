@@ -265,13 +265,13 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 					fclose(ftemp);
 
 				}*/
-				Pa_StopStream(stream);
+				//Pa_StopStream(stream);
 
 				succeed = write_to_syll2(d_word, def_name, ext, path, dist, final_feats, model, sum_normal, fbank, words,
 					node, info, mean, normalize_detect,row_of_training_set,pow_spectrum, matrix,dct,temp);
 				//printf("temp: %d\n", succeed);
 
-				Pa_StartStream(stream);
+				//Pa_StartStream(stream);
 				/*free(word);
 				word = (float *)malloc(sizeof(float) * FRAMES_PER_BUFFER * MAX_WORD_BUFFER);*/
 				//word = (float *)realloc(word, sizeof(float) * FRAMES_PER_BUFFER);
@@ -374,7 +374,7 @@ int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist,
 
 	}*/
 	int temp2 = predict_one_time(compact_final_feats, path, 0, model, sum_normal, fbank, errflag, node, info, mean, normalize_detect,row_of_training_set);
-
+	//int temp2 = 1;
 	//int temp = 1;
 
 		//int temp = predict_test_one_time(compact_final_feats, path, 0, model, sum_normal, fbank);

@@ -89,6 +89,17 @@ list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
 
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: install/strip
+
+.PHONY : install/strip/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -155,11 +166,6 @@ voiceDetection: cmake_check_build_system
 voiceDetection/fast:
 	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/build
 .PHONY : voiceDetection/fast
-
-# Manual pre-install relink rule for target.
-voiceDetection/preinstall:
-	$(MAKE) -f CMakeFiles/voiceDetection.dir/build.make CMakeFiles/voiceDetection.dir/preinstall
-.PHONY : voiceDetection/preinstall
 
 #=============================================================================
 # Target rules for targets named voiceDetect
@@ -480,6 +486,7 @@ help:
 	@echo "... install/local"
 	@echo "... install"
 	@echo "... list_install_components"
+	@echo "... install/strip"
 	@echo "... voiceDetection"
 	@echo "... voiceDetect"
 	@echo "... edit_cache"

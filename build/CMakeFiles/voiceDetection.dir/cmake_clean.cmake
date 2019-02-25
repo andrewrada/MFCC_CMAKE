@@ -11,8 +11,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/voiceDetection.dir/src/svm2.cpp.o"
   "libvoiceDetection.pdb"
   "libvoiceDetection.so"
-  "libvoiceDetection.pdb"
-  "CMakeFiles/CMakeRelink.dir/libvoiceDetection.so"
 )
 
 # Per-language clean rules from dependency scanning.

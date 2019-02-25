@@ -333,42 +333,6 @@ CMakeFiles/voiceDetection.dir/build: libvoiceDetection.so
 
 .PHONY : CMakeFiles/voiceDetection.dir/build
 
-# Object files for target voiceDetection
-voiceDetection_OBJECTS = \
-"CMakeFiles/voiceDetection.dir/src/augmentation.c.o" \
-"CMakeFiles/voiceDetection.dir/src/filter.c.o" \
-"CMakeFiles/voiceDetection.dir/src/gemm.c.o" \
-"CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o" \
-"CMakeFiles/voiceDetection.dir/src/mfcc.c.o" \
-"CMakeFiles/voiceDetection.dir/src/record.c.o" \
-"CMakeFiles/voiceDetection.dir/src/svm.c.o" \
-"CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o" \
-"CMakeFiles/voiceDetection.dir/src/utils.c.o" \
-"CMakeFiles/voiceDetection.dir/src/svm2.cpp.o"
-
-# External object files for target voiceDetection
-voiceDetection_EXTERNAL_OBJECTS =
-
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/augmentation.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/filter.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/gemm.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/kiss_fft.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/mfcc.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/record.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/svm.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/syll_fragmentation.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/utils.c.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/src/svm2.cpp.o
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/build.make
-CMakeFiles/CMakeRelink.dir/libvoiceDetection.so: CMakeFiles/voiceDetection.dir/relink.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/pi/MFCC_CMAKE/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX shared library CMakeFiles/CMakeRelink.dir/libvoiceDetection.so"
-	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/voiceDetection.dir/relink.txt --verbose=$(VERBOSE)
-
-# Rule to relink during preinstall.
-CMakeFiles/voiceDetection.dir/preinstall: CMakeFiles/CMakeRelink.dir/libvoiceDetection.so
-
-.PHONY : CMakeFiles/voiceDetection.dir/preinstall
-
 CMakeFiles/voiceDetection.dir/requires: CMakeFiles/voiceDetection.dir/src/augmentation.c.o.requires
 CMakeFiles/voiceDetection.dir/requires: CMakeFiles/voiceDetection.dir/src/filter.c.o.requires
 CMakeFiles/voiceDetection.dir/requires: CMakeFiles/voiceDetection.dir/src/gemm.c.o.requires

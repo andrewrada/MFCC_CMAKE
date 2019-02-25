@@ -1,6 +1,7 @@
 /home/pi/MFCC_CMAKE/build/CMakeFiles/install/local.dir
 /home/pi/MFCC_CMAKE/build/CMakeFiles/install.dir
 /home/pi/MFCC_CMAKE/build/CMakeFiles/list_install_components.dir
+/home/pi/MFCC_CMAKE/build/CMakeFiles/install/strip.dir
 /home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetection.dir
 /home/pi/MFCC_CMAKE/build/CMakeFiles/voiceDetect.dir
 /home/pi/MFCC_CMAKE/build/CMakeFiles/edit_cache.dir
