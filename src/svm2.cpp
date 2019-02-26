@@ -3546,7 +3546,7 @@ void do_cross_validation(svm_problem * prob, svm_parameter * param)
 }
 
 double predict_test(hyper_vector compact_final_feats, char * path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank, int errflag,
-	struct svm_node *node, int *infoV, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set)
+	struct svm_node *node, int *infoV, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set, double *dec_values, double *kvalue, int *start, int *vote)
 {
 	struct timeval tv0, tv1;
 	gettimeofday(&tv0, 0);
@@ -3601,7 +3601,7 @@ double predict_test(hyper_vector compact_final_feats, char * path, int predict_p
 	}
 	else {
 		printf("ccsd");
-		predict_label = svm_predict_test(model, node, errflag);
+		predict_label = svm_predict_test(model, node, errflag, dec_values, kvalue, start, vote);
 		//printf("%.17g\n", predict_label);
 	}
 	if (predict_probability) {
@@ -3672,8 +3672,10 @@ int predict_test_one_time(SIGNAL audio_signal, char *path, int predict_probabili
 }
 
 int predict_one_time(hyper_vector compact_final_feats, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank, int errflag,
-	struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set) {
-	return (int)predict_test(compact_final_feats, path, predict_probability, model, sum_normal, fbank, errflag, node, info, mean, normalize_detect, row_of_training_set);
+	struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set, double *dec_values, double *kvalue, int *start, int *vote) {
+	return (int)predict_test(compact_final_feats, path, predict_probability, model, sum_normal,
+				 fbank, errflag, node, info, mean, normalize_detect, row_of_training_set,
+				 dec_values, kvalue, start, vote);
 }
 
 void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probability, struct svm_model *model, SAMPLE *sum_normal, char *y_n, hyper_vector fbank) {
@@ -3697,24 +3699,24 @@ void check_continue_predict(SIGNAL audio_signal, char *path, int predict_probabi
 
 
 ////////////////////
-double svm_predict_test(const svm_model * model, const struct svm_node * x, int errflag)
+double svm_predict_test(const svm_model * model, const struct svm_node * x, int errflag, double *dec_values, double *kvalue, int *start, int *vote)
 {
 	int nr_class = model->nr_class;
-	double *dec_values;
+	/*double *dec_values;
 	if (model->param.svm_type == ONE_CLASS ||
 		model->param.svm_type == EPSILON_SVR ||
 		model->param.svm_type == NU_SVR)
 		dec_values = Malloc(double, 1);
 	else
-		dec_values = Malloc(double, nr_class*(nr_class - 1) / 2);
-	double pred_result = svm_predict_values_test(model, x, dec_values, errflag);
-	free(dec_values);
+		dec_values = Malloc(double, nr_class*(nr_class - 1) / 2);*/
+	double pred_result = svm_predict_values_test(model, x, dec_values, errflag, kvalue, start, vote);
+	//free(dec_values);
 	return pred_result;
 }
 
 /////////////////////
 
-double svm_predict_values_test(const svm_model * model, const struct svm_node * x, double * dec_values, int errflag)
+double svm_predict_values_test(const svm_model * model, const struct svm_node * x, double * dec_values, int errflag, double *kvalue, int *start, int *vote)
 {
 	int i;
 	if (model->param.svm_type == ONE_CLASS ||
@@ -3738,24 +3740,16 @@ double svm_predict_values_test(const svm_model * model, const struct svm_node * 
 		int nr_class = model->nr_class;
 		int l = model->l;
 
-		double *kvalue = Malloc(double, l);
+		//double *kvalue = Malloc(double, l);
 		for (i = 0; i < l; i++)
 			kvalue[i] = Kernel::k_function_linear(x, model->SV[i], errflag);
-		/*if (errflag == 0) {
-			printf("asd");
-			FILE *ftemp = fopen("data.txt", "w");
-			for (i = 0; i < l; i++) {
-				fprintf(ftemp, "%f\n", kvalue[i]);
-			}
-		}*/
 
-
-		int *start = Malloc(int, nr_class);
+		//int *start = Malloc(int, nr_class);
 		start[0] = 0;
 		for (i = 1; i < nr_class; i++)
 			start[i] = start[i - 1] + model->nSV[i - 1];
 
-		int *vote = Malloc(int, nr_class);
+		//int *vote = Malloc(int, nr_class);
 		for (i = 0; i < nr_class; i++)
 			vote[i] = 0;
 		int p = 0;
@@ -3788,9 +3782,9 @@ double svm_predict_values_test(const svm_model * model, const struct svm_node * 
 		for (i = 1; i < nr_class; i++)
 			if (vote[i] > vote[vote_max_idx])
 				vote_max_idx = i;
-		free(kvalue);
+		/*free(kvalue);
 		free(start);
-		free(vote);
+		free(vote);*/
 		return model->label[vote_max_idx];
 	}
 }

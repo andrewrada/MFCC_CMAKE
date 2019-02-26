@@ -116,45 +116,45 @@ svm2.h
 record.h
 ../include/record.h
 
-/home/pi/MFCC_CMAKE/src/augmentation.c
+/home/artik/MFCC_CMAKE/src/augmentation.c
 augmentation.h
-/home/pi/MFCC_CMAKE/src/augmentation.h
+/home/artik/MFCC_CMAKE/src/augmentation.h
 
-/home/pi/MFCC_CMAKE/src/filter.c
+/home/artik/MFCC_CMAKE/src/filter.c
 filter.h
-/home/pi/MFCC_CMAKE/src/filter.h
+/home/artik/MFCC_CMAKE/src/filter.h
 
-/home/pi/MFCC_CMAKE/src/gemm.c
+/home/artik/MFCC_CMAKE/src/gemm.c
 gemm.h
-/home/pi/MFCC_CMAKE/src/gemm.h
+/home/artik/MFCC_CMAKE/src/gemm.h
 
-/home/pi/MFCC_CMAKE/src/kiss_fft.c
+/home/artik/MFCC_CMAKE/src/kiss_fft.c
 _kiss_fft_guts.h
-/home/pi/MFCC_CMAKE/src/_kiss_fft_guts.h
+/home/artik/MFCC_CMAKE/src/_kiss_fft_guts.h
 
-/home/pi/MFCC_CMAKE/src/mfcc.c
+/home/artik/MFCC_CMAKE/src/mfcc.c
 mfcc.h
-/home/pi/MFCC_CMAKE/src/mfcc.h
+/home/artik/MFCC_CMAKE/src/mfcc.h
 
-/home/pi/MFCC_CMAKE/src/record.c
+/home/artik/MFCC_CMAKE/src/record.c
 record.h
-/home/pi/MFCC_CMAKE/src/record.h
+/home/artik/MFCC_CMAKE/src/record.h
 
-/home/pi/MFCC_CMAKE/src/svm.c
+/home/artik/MFCC_CMAKE/src/svm.c
 svm.h
-/home/pi/MFCC_CMAKE/src/svm.h
+/home/artik/MFCC_CMAKE/src/svm.h
 
-/home/pi/MFCC_CMAKE/src/syll_fragmentation.c
+/home/artik/MFCC_CMAKE/src/syll_fragmentation.c
 syll_fragmentation.h
-/home/pi/MFCC_CMAKE/src/syll_fragmentation.h
+/home/artik/MFCC_CMAKE/src/syll_fragmentation.h
 sys/time.h
 -
 time.h
 -
 
-/home/pi/MFCC_CMAKE/src/utils.c
+/home/artik/MFCC_CMAKE/src/utils.c
 utils.h
-/home/pi/MFCC_CMAKE/src/utils.h
+/home/artik/MFCC_CMAKE/src/utils.h
 
-/home/pi/portaudio/include/portaudio.h
+/home/artik/portaudio/include/portaudio.h
 

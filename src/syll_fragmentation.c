@@ -138,7 +138,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 	int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4,
 	float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
 	hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, float *db, svm_node_td *node, int *info, SAMPLE *mean, 
-	SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp) {
+	SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp, double *dec_values, double *kvalue, int *start, int *vote) {
 	////
 	int chunk_size = 160;
 	float sum = 0;
@@ -268,7 +268,7 @@ int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *d
 				//Pa_StopStream(stream);
 
 				succeed = write_to_syll2(d_word, def_name, ext, path, dist, final_feats, model, sum_normal, fbank, words,
-					node, info, mean, normalize_detect,row_of_training_set,pow_spectrum, matrix,dct,temp);
+					node, info, mean, normalize_detect,row_of_training_set,pow_spectrum, matrix,dct,temp, dec_values, kvalue, start, vote);
 				//printf("temp: %d\n", succeed);
 
 				//Pa_StartStream(stream);
@@ -354,7 +354,8 @@ void write_to_syll(int *d_word, char *def_name, char *ext, char*path, int *dist,
 }
 
 int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal
-	, hyper_vector fbank, char **words, svm_node_td *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp) {
+	, hyper_vector fbank, char **words, svm_node_td *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,
+	hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp, double *dec_values, double *kvalue, int *start, int *vote) {
 
 	//struct timeval tv0, tv1;
 	//gettimeofday(&tv0, NULL);
@@ -373,7 +374,8 @@ int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist,
 		fclose(ftemp);
 
 	}*/
-	int temp2 = predict_one_time(compact_final_feats, path, 0, model, sum_normal, fbank, errflag, node, info, mean, normalize_detect,row_of_training_set);
+	int temp2 = predict_one_time(compact_final_feats, path, 0, model, sum_normal, fbank, errflag, node, info,
+					mean, normalize_detect,row_of_training_set, dec_values, kvalue, start, vote);
 	//int temp2 = 1;
 	//int temp = 1;
 
@@ -475,6 +477,17 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 	float *w2 = (float *)calloc(order, sizeof(float));
 	float *w3 = (float *)calloc(order, sizeof(float));
 	float *w4 = (float *)calloc(order, sizeof(float));
+	double *dec_values;
+	if (model->param.svm_type == ONE_CLASS ||
+		model->param.svm_type == EPSILON_SVR ||
+		model->param.svm_type == NU_SVR)
+		dec_values = (double *)malloc(sizeof(double));
+	else
+		dec_values = (double *)malloc(model->nr_class*(model->nr_class - 1) / 2 * sizeof(double));
+	
+	double *kvalue = (double *)malloc(sizeof(double) * model->l);
+	int *start = (int *)malloc(sizeof(int) * model->nr_class);
+	int *vote = (int *)malloc(sizeof(int) * model->nr_class);
 	//LARGE_INTEGER Frequency;
 
 	float *queue = (float *)calloc( QUEUE_SIZE,sizeof(float) );
@@ -566,7 +579,8 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 				}
 				else {
 					silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2, d3, d4,
-						w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats, cfg, cx_in, cx_out,db, node, info, mean, normalize_detect, row_of_training_set,pow_spectrum, matrix,dct,temp);
+						w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats, cfg, cx_in, cx_out,db, node, info, mean, normalize_detect,
+						row_of_training_set,pow_spectrum, matrix,dct,temp, dec_values, kvalue, start, vote);
 				}
 			}
 			else
@@ -575,7 +589,8 @@ void real_time_predict(svm_model_td *model, SAMPLE *sum_normal, char *def_path, 
 				//gettimeofday(&tv0, NULL);
 				//printf("3");
 				temp = silence_detect(queue, QUEUE_SIZE, &time, &cond_flag, &dist, word, &peak, syll, &lowPeak1, &lowPeak2, &d_word, def_name, ext, def_path, A, d1, d2,
-					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats, cfg, cx_in, cx_out,db, node, info, mean, normalize_detect,row_of_training_set,pow_spectrum, matrix,dct,temp);
+					d3, d4, w0, w1, w2, w3, w4, x, model, sum_normal, stream, tmp, words, final_feats.data, temp_feats, cfg, cx_in, cx_out,db, node, info, mean,
+					normalize_detect,row_of_training_set,pow_spectrum, matrix,dct,temp, dec_values, kvalue, start, vote);
 				//printf("4");
 				//if (temp == 10) {
 				//	errflag = 0;
@@ -642,7 +657,11 @@ done:
 	free(w3);
 	free(w4);
 	free(x);
-	Pa_Terminate();	printf("111");
+	free(dec_values);
+	free(kvalue);
+	free(start);
+	free(vote);
+	Pa_Terminate();
 
 }
 

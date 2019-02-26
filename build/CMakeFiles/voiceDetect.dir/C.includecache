@@ -90,21 +90,21 @@ svm2.h
 record.h
 ../include/record.h
 
-/home/pi/MFCC_CMAKE/main.c
+/home/artik/MFCC_CMAKE/main.c
 stdio.h
 -
 record.h
-/home/pi/MFCC_CMAKE/record.h
+/home/artik/MFCC_CMAKE/record.h
 mfcc.h
-/home/pi/MFCC_CMAKE/mfcc.h
+/home/artik/MFCC_CMAKE/mfcc.h
 utils.h
-/home/pi/MFCC_CMAKE/utils.h
+/home/artik/MFCC_CMAKE/utils.h
 syll_fragmentation.h
-/home/pi/MFCC_CMAKE/syll_fragmentation.h
+/home/artik/MFCC_CMAKE/syll_fragmentation.h
 sys/time.h
 -
 svm2.h
-/home/pi/MFCC_CMAKE/svm2.h
+/home/artik/MFCC_CMAKE/svm2.h
 
-/home/pi/portaudio/include/portaudio.h
+/home/artik/portaudio/include/portaudio.h
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/pi/MFCC_CMAKE
+# Install script for directory: /home/artik/MFCC_CMAKE
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -32,7 +32,7 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
   set(CMAKE_INSTALL_SO_NO_EXE "1")
 endif()
 
-if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
     file(RPATH_CHECK
@@ -47,7 +47,7 @@ if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMP
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/pi/MFCC_CMAKE/build/libvoiceDetection.so")
+file(INSTALL DESTINATION "/usr/lib" TYPE SHARED_LIBRARY FILES "/home/artik/MFCC_CMAKE/build/libvoiceDetection.so")
   if(EXISTS "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/usr/lib/libvoiceDetection.so")
     file(RPATH_CHANGE
@@ -68,5 +68,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/pi/MFCC_CMAKE/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/artik/MFCC_CMAKE/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

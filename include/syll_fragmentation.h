@@ -101,7 +101,8 @@ extern "C" {
 		hyper_vector fbank, char **words);*/
 		//int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal, hyper_vector fbank, char **words);
 	int write_to_syll2(int *d_word, char *def_name, char *ext, char*path, int *dist, SAMPLE *final_feats, struct svm_model *model, SAMPLE *sum_normal
-		, hyper_vector fbank, char **words, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp);
+		, hyper_vector fbank, char **words, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum,
+		hyper_vector matrix, hyper_vector dct,float *temp, double *dec_values, double *kvalue, int *start, int *vote);
 
 	/*int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
 		int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4,
@@ -111,7 +112,8 @@ extern "C" {
 	int silence_detect(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
 		int *d_word, char *def_name, char *ext, char *path, float *A, float *d1, float *d2, float *d3, float *d4, float *w0, float *w1, float *w2, float *w3, float *w4,
 		float *x, svm_model_td *model, SAMPLE *sum_normal, PaStream *stream, hyper_vector fbank, char **words, SAMPLE *final_feats,
-		hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, float *db, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp);
+		hyper_vector temp_feats, kiss_fft_cfg cfg, kiss_fft_cpx * cx_in, kiss_fft_cpx * cx_out, float *db, struct svm_node *node, int *info, SAMPLE *mean, SAMPLE *normalize_detect, 
+		int row_of_training_set,hyper_vector pow_spectrum, hyper_vector matrix, hyper_vector dct,float *temp, double *dec_values, double *kvalue, int *start, int *vote);
 	void check_sentence_formation(char *path, char *ext, int sent_len, char *wtemp, int num_of_sents);
 	int check_word(int word, int pword);
 	int silence_detect_record(float *data, size_t length, int *time, int *cond_flag, int *dist, float *word, float *peak, float *syll, float *lowPeak1, float *lowPeak2,
